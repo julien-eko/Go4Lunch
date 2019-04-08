@@ -120,6 +120,9 @@ public class HomePageActivity extends AppCompatActivity implements NavigationVie
     @OnClick(R.id.home_page_activity_map_button)
     public void onClickMapView(){
         this.configureAndShowMapViewFragment();
+
+
+
         mapViewButton.setTextColor(getResources().getColor(R.color.colorPrimary));
         listViewButton.setTextColor(getResources().getColor(R.color.black));
         workmatesButton.setTextColor(getResources().getColor(R.color.black));
@@ -166,6 +169,10 @@ public class HomePageActivity extends AppCompatActivity implements NavigationVie
     // --------------
     private void configureFragment(){
         mapViewButton.setTextColor(getResources().getColor(R.color.colorPrimary));
+        Drawable drawable = getResources().getDrawable(R.drawable.baseline_map_black_24).mutate();
+        drawable.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
+        mapViewButton.setCompoundDrawablesWithIntrinsicBounds(null,drawable,null,null);
+
         MapViewFragment mapViewFragment = new MapViewFragment();
 
         getSupportFragmentManager().beginTransaction()
@@ -177,9 +184,9 @@ public class HomePageActivity extends AppCompatActivity implements NavigationVie
     private void configureAndShowMapViewFragment(){
         MapViewFragment mapViewFragment = new MapViewFragment();
 
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.home_page_activity_frame_layout, mapViewFragment)
-                    .commit();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.home_page_activity_frame_layout, mapViewFragment)
+                .commit();
 
     }
 
