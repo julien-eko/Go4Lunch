@@ -6,6 +6,7 @@
     tools:context="com.example.go4lunch.Fragments.MapViewFragment">
 
     <TextView
+        android:id="@+id/testapi"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="list view" />
