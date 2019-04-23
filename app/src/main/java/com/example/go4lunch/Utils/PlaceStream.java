@@ -1,5 +1,6 @@
 package com.example.go4lunch.Utils;
 
+import com.example.go4lunch.Models.Details.Details;
 import com.example.go4lunch.Models.Search.NearbySearch;
 
 import java.util.concurrent.TimeUnit;
@@ -18,4 +19,11 @@ public class PlaceStream {
                 .timeout(10, TimeUnit.SECONDS);
     }
 
+    public static Observable<Details> streamDetails(String placeId) {
+        PlaceService placeService = PlaceService.retrofit.create(PlaceService.class);
+        return placeService.getDetail(placeId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .timeout(10, TimeUnit.SECONDS);
+    }
 }

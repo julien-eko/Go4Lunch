@@ -9,7 +9,7 @@ public class Restaurant {
     private String address;
     private int worksmates;
     private String schedule;
-    private float stars;
+    private Integer stars;
 
     public Restaurant() {
 
@@ -76,7 +76,7 @@ public class Restaurant {
         return stars;
     }
 
-    public void setStars(float stars) {
+    public void setStars(Integer stars) {
         this.stars = stars;
     }
 

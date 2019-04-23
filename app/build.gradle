@@ -14,6 +14,16 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            //place api
+            buildConfigField 'String', "ApiKey", "\"AIzaSyDyz6E5UGMEIrZeQHw2pyYox5MFO59DSOE\""
+            resValue 'string', "api_key", "\"AIzaSyDyz6E5UGMEIrZeQHw2pyYox5MFO59DSOE\""
+
+        }
+        debug {
+            // Place Api
+            buildConfigField 'String', "ApiKey","\"AIzaSyDyz6E5UGMEIrZeQHw2pyYox5MFO59DSOE\""
+            resValue 'string', "api_key", "\"AIzaSyDyz6E5UGMEIrZeQHw2pyYox5MFO59DSOE\""
         }
     }
 }
@@ -51,6 +61,7 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
     implementation 'io.reactivex.rxjava2:rxjava:2.1.7'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.3.1'
 

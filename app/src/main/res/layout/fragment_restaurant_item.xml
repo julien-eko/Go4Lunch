@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dip">
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/fragment_restaurant_item_name"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/fragment_restaurant_item_distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="200m"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView android:id="@+id/fragment_restaurant_item_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="12sp"
+                xmlns:android="http://schemas.android.com/apk/res/android" />
+
+            <ImageView
+                android:id="@+id/fragment_restaurant_item_workmates_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/baseline_person_outline_black_18" />
+
+            <TextView
+                android:id="@+id/fragment_restaurant_item_workmates_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="(1)" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/fragment_restaurant_open_hours"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="12sp"
+                xmlns:android="http://schemas.android.com/apk/res/android" />
+
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                >
+
+
+                <ImageView
+                    android:id="@+id/fragment_restaurant_item_stars_1"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/baseline_star_rate_white_24"
+                    android:layout_margin="2dip"
+                    android:backgroundTint="@color/yellow"/>
+
+                <ImageView
+                    android:id="@+id/fragment_restaurant_item_stars_2"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/baseline_star_rate_white_24"
+                    android:layout_margin="2dip"
+                    android:backgroundTint="@color/yellow"/>
+
+                <ImageView
+                    android:id="@+id/fragment_restaurant_item_stars_3"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/baseline_star_rate_white_24"
+                    android:layout_margin="2dip"
+                    android:backgroundTint="@color/yellow"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/fragment_restaurant_item_image"
+        android:layout_weight="3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/restaurant"
+        android:layout_margin="2dip"/>
+
+</LinearLayout>
+

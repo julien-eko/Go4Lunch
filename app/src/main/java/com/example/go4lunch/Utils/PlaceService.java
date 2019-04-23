@@ -1,5 +1,7 @@
 package com.example.go4lunch.Utils;
 
+import com.example.go4lunch.BuildConfig;
+import com.example.go4lunch.Models.Details.Details;
 import com.example.go4lunch.Models.Search.NearbySearch;
 
 import io.reactivex.Observable;
@@ -11,11 +13,17 @@ import retrofit2.http.Query;
 
 public interface PlaceService {
 
-    String apiKey="AIzaSyDyz6E5UGMEIrZeQHw2pyYox5MFO59DSOE";
+    String apiKey= BuildConfig.ApiKey;
 
     //api Place Search
     @GET("nearbysearch/json?radius=1500&type=restaurant&key="+apiKey)
     Observable<NearbySearch> getNearbySearch(@Query("location") String location );
+
+    //api Place Detail
+    @GET("details/json?&key="+apiKey)
+    Observable<Details> getDetail(@Query("placeid") String placeId );
+
+
 
 
     public static final Retrofit retrofit = new Retrofit.Builder()
@@ -23,5 +31,8 @@ public interface PlaceService {
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build();
+
+
+
 }
 
