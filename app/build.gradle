@@ -1,5 +1,11 @@
 apply plugin: 'com.android.application'
 
+
+def localPropertiesFile = rootProject.file("local.properties")
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(localPropertiesFile))
+
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -16,14 +22,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             //place api
-            buildConfigField 'String', "ApiKey", "\"AIzaSyDyz6E5UGMEIrZeQHw2pyYox5MFO59DSOE\""
-            resValue 'string', "api_key", "\"AIzaSyDyz6E5UGMEIrZeQHw2pyYox5MFO59DSOE\""
-
+            buildConfigField 'String', "ApiKey", localProperties['apiKey']
+            resValue 'string', "api_key", localProperties['apiKey']
         }
         debug {
             // Place Api
-            buildConfigField 'String', "ApiKey","\"AIzaSyDyz6E5UGMEIrZeQHw2pyYox5MFO59DSOE\""
-            resValue 'string', "api_key", "\"AIzaSyDyz6E5UGMEIrZeQHw2pyYox5MFO59DSOE\""
+            buildConfigField 'String', "ApiKey",localProperties['apiKey']
+            resValue 'string', "api_key", localProperties['apiKey']
         }
     }
 }
