@@ -51,7 +51,19 @@ public class ListRestaurant {
             Double rating =result.getRating();
             restaurant.setStars(rating(rating));
 
-            executeHttpRequestWithRetrofit(result.getPlaceId());
+
+            if(result.getPhotos() != null){
+                if(result.getPhotos().get(0).getPhotoReference() != null){
+                    restaurant.setImage(result.getPhotos().get(0).getPhotoReference());
+                }else {
+                    restaurant.setImage(null);
+                }
+            }else{
+                restaurant.setImage(null);
+            }
+
+
+            //executeHttpRequestWithRetrofit(result.getPlaceId());
 
 
 

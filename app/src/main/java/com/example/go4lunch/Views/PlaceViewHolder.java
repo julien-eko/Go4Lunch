@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
+import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.Models.Restaurant;
 import com.example.go4lunch.R;
 
@@ -28,11 +29,15 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
     ImageView stars3;
     @BindView(R.id.fragment_restaurant_item_distance)
     TextView distance;
+    @BindView(R.id.fragment_restaurant_item_image)
+    ImageView image;
 
+    private String api_key;
 
     public PlaceViewHolder(View itemView) {
         super(itemView);
         ButterKnife.bind(this, itemView);
+        this.api_key = BuildConfig.ApiKey;
     }
 
     //update view
@@ -55,6 +60,13 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
         }
         if (restaurant.getStars()==2){
             stars1.setVisibility(View.INVISIBLE);
+        }
+
+        if (restaurant.getImage() != null) {
+            String photoUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" + restaurant.getImage() + "&key=" + api_key;
+            glide.load(photoUrl).into(image);
+        }else{
+            glide.load(R.drawable.restaurant).into(image);
         }
 
     }
