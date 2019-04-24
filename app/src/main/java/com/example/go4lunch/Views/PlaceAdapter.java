@@ -34,6 +34,9 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceViewHolder> {
         return new PlaceViewHolder(view);
     }
 
+    public Restaurant getRestaurant(int position){
+        return this.list.get(position);
+    }
     // UPDATE VIEW
     @Override
     public void onBindViewHolder(PlaceViewHolder viewHolder, int position) {

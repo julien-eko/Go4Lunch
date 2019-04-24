@@ -2,6 +2,7 @@ package com.example.go4lunch.Fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -14,12 +15,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.go4lunch.Activities.RestaurantDetailsActivity;
 import com.example.go4lunch.Models.ListRestaurant;
 import com.example.go4lunch.Models.Restaurant;
 import com.example.go4lunch.Models.Search.NearbySearch;
 import com.example.go4lunch.R;
+import com.example.go4lunch.Utils.ItemClickSupport;
 import com.example.go4lunch.Utils.PlaceStream;
 import com.example.go4lunch.Views.PlaceAdapter;
 
@@ -59,7 +63,7 @@ public class ListViewFragment extends Fragment {
         this.executeHttpRequestWithRetrofit();
         //Configure the SwipeRefreshLayout
         this.configureSwipeRefreshLayout();
-
+        this.configureOnClickRecyclerView();
         this.myLocation();
 
 
@@ -93,6 +97,18 @@ public class ListViewFragment extends Fragment {
         this.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
+    // 1 - Configure item click on RecyclerView
+    private void configureOnClickRecyclerView(){
+        ItemClickSupport.addTo(recyclerView, R.layout.fragment_restaurant_item)
+                .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                        // 1 - Get user from adapter
+                        Restaurant restaurant = adapter.getRestaurant(position);
+                        Intent restaurantDetails = new Intent(ListViewFragment.this.getContext(), RestaurantDetailsActivity.class);
+                        startActivity(restaurantDetails);}
+                });
+    }
     // -------------------
     // HTTP (RxJAVA)
     // -------------------

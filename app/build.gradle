@@ -27,7 +27,7 @@ android {
         }
         debug {
             // Place Api
-            buildConfigField 'String', "ApiKey",localProperties['apiKey']
+            buildConfigField 'String', "ApiKey", localProperties['apiKey']
             resValue 'string', "api_key", localProperties['apiKey']
         }
     }
