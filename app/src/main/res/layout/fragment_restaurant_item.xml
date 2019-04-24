@@ -30,7 +30,6 @@
                 android:id="@+id/fragment_restaurant_item_distance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="200m"
                 android:textSize="16sp" />
 
         </LinearLayout>

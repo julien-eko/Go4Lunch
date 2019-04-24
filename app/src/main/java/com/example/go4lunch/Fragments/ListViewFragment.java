@@ -1,5 +1,10 @@
 package com.example.go4lunch.Fragments;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -26,11 +31,15 @@ import butterknife.ButterKnife;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 
+import static android.support.v4.content.ContextCompat.getSystemService;
+
 public class ListViewFragment extends Fragment {
 
     private Disposable disposable;
     private List<Restaurant> list;
     private PlaceAdapter adapter;
+    private double longitude;
+    private double latitude;
     @BindView(R.id.fragment_list_view_swipe_refresh)
     SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.fragment_list_view_recycler_view)
@@ -50,6 +59,8 @@ public class ListViewFragment extends Fragment {
         this.executeHttpRequestWithRetrofit();
         //Configure the SwipeRefreshLayout
         this.configureSwipeRefreshLayout();
+
+        this.myLocation();
 
 
         return view;
@@ -87,7 +98,10 @@ public class ListViewFragment extends Fragment {
     // -------------------
 
     private void executeHttpRequestWithRetrofit() {
-        this.disposable = PlaceStream.streamNearbySearch("45.515731, -1.126769").subscribeWith(new DisposableObserver<NearbySearch>() {
+
+
+
+        this.disposable = PlaceStream.streamNearbySearch(Double.toString(latitude) + ","+Double.toString(longitude)).subscribeWith(new DisposableObserver<NearbySearch>() {
             @Override
             public void onNext(NearbySearch nearbySearch) {
                 updateUI(nearbySearch);
@@ -114,7 +128,17 @@ public class ListViewFragment extends Fragment {
     private void updateUI(NearbySearch nearbySearch) {
         swipeRefreshLayout.setRefreshing(false);
         this.list.clear();
-        ListRestaurant.ListNearbySearch(this.list,nearbySearch);
+        this.myLocation();
+        ListRestaurant.ListNearbySearch(this.list,nearbySearch,longitude,latitude);
         adapter.notifyDataSetChanged();
     }
+
+    public void myLocation() {
+        LocationManager lm = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        @SuppressLint("MissingPermission")
+        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        longitude = location.getLongitude();
+        latitude = location.getLatitude();
+    }
+
 }

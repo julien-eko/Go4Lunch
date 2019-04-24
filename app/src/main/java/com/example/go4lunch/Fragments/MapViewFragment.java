@@ -80,6 +80,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
     private CameraPosition mCameraPosition;
     private ImageButton positionButton;
 
+
+
     public static MapViewFragment newInstance() {
         MapViewFragment fragment = new MapViewFragment();
         return fragment;
@@ -338,4 +340,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
                 .setItems(mLikelyPlaceNames, listener)
                 .show();
     }
+
+
 }

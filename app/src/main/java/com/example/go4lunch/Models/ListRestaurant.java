@@ -1,5 +1,10 @@
 package com.example.go4lunch.Models;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationManager;
+
 import com.example.go4lunch.Models.Details.Details;
 import com.example.go4lunch.Models.Search.NearbySearch;
 import com.example.go4lunch.Models.Search.Result;
@@ -14,16 +19,22 @@ public class ListRestaurant {
 
     private static Disposable disposable;
     private  static String phone;
+    private static Context mContext;
 
-    public static void ListNearbySearch(List<Restaurant> listRestaurant, NearbySearch nearbySearch){
+    public static void ListNearbySearch(List<Restaurant> listRestaurant, NearbySearch nearbySearch,double longitude,double latitude){
         for(Result result : nearbySearch.getResults()){
             Restaurant restaurant = new Restaurant();
 
             //set name of restaurant
             restaurant.setNameRestaurant(result.getName());
 
+            //adress
             restaurant.setAddress(result.getVicinity());
 
+            //distance
+            float[] distance = new float[1];
+            Location.distanceBetween(latitude,longitude,result.getGeometry().getLocation().getLat(),result.getGeometry().getLocation().getLng(),distance);
+            restaurant.setDistance(Integer.toString((int)distance[0])+"m");
 
             //open or close
             if (result.getOpeningHours() != null) {

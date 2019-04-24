@@ -26,6 +26,8 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
     ImageView stars2;
     @BindView(R.id.fragment_restaurant_item_stars_3)
     ImageView stars3;
+    @BindView(R.id.fragment_restaurant_item_distance)
+    TextView distance;
 
 
     public PlaceViewHolder(View itemView) {
@@ -40,6 +42,7 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
         this.name.setText(restaurant.getNameRestaurant());
         this.address.setText(restaurant.getAddress());
         this.openHours.setText(restaurant.getSchedule());
+        this.distance.setText(restaurant.getDistance());
 
         if (restaurant.getStars()==0) {
             stars1.setVisibility(View.INVISIBLE);
