@@ -10,4 +10,7 @@
     <string name="workmate">Workmate</string>
     <string name="list_view">List View</string>
     <string name="map_view">Map View</string>
+    <string name="call">CALL</string>
+    <string name="like">LIKE</string>
+    <string name="website">WEBSITE</string>
 </resources>

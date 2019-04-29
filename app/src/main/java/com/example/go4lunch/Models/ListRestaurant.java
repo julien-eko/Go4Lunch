@@ -25,6 +25,8 @@ public class ListRestaurant {
         for(Result result : nearbySearch.getResults()){
             Restaurant restaurant = new Restaurant();
 
+            restaurant.setId(result.getPlaceId());
+
             //set name of restaurant
             restaurant.setNameRestaurant(result.getName());
 

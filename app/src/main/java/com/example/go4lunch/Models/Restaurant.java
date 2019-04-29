@@ -10,6 +10,7 @@ public class Restaurant {
     private int worksmates;
     private String schedule;
     private Integer stars;
+    private String id;
 
     public Restaurant() {
 
@@ -78,6 +79,14 @@ public class Restaurant {
 
     public void setStars(Integer stars) {
         this.stars = stars;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
 

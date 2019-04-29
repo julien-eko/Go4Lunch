@@ -7,6 +7,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -104,8 +105,10 @@ public class ListViewFragment extends Fragment {
                     @Override
                     public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                         // 1 - Get user from adapter
-                        Restaurant restaurant = adapter.getRestaurant(position);
+                        //Restaurant restaurant = adapter.getRestaurant(position);
                         Intent restaurantDetails = new Intent(ListViewFragment.this.getContext(), RestaurantDetailsActivity.class);
+                        restaurantDetails.putExtra("restaurant", adapter.getRestaurant(position));
+                        restaurantDetails.putExtra("photo",adapter.getPhoto(position));
                         startActivity(restaurantDetails);}
                 });
     }

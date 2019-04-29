@@ -14,9 +14,9 @@ public class ResultDetails {
     @Expose
     private String adrAddress;
     @SerializedName("formatted_address")
-    //@Expose
-    //private String formattedAddress;
-    //@SerializedName("formatted_phone_number")
+    @Expose
+    private String formattedAddress;
+    @SerializedName("formatted_phone_number")
     @Expose
     private String formattedPhoneNumber;
     @SerializedName("geometry")
@@ -80,7 +80,7 @@ public class ResultDetails {
     public void setAdrAddress(String adrAddress) {
         this.adrAddress = adrAddress;
     }
-/*
+
     public String getFormattedAddress() {
         return formattedAddress;
     }
@@ -88,7 +88,7 @@ public class ResultDetails {
     public void setFormattedAddress(String formattedAddress) {
         this.formattedAddress = formattedAddress;
     }
-*/
+
     public String getFormattedPhoneNumber() {
         return formattedPhoneNumber;
     }

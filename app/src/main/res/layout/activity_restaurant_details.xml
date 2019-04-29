@@ -6,7 +6,136 @@
     android:layout_height="match_parent"
     tools:context=".Activities.RestaurantDetailsActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
+
+        <ImageView
+            android:id="@+id/activity_restaurant_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/restaurant" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/activity_restaurant_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="name"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp" />
+
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:orientation="horizontal">
+
+
+                    <ImageView
+                        android:id="@+id/activity_restaurant_item_stars_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="2dip"
+                        android:layout_weight="1"
+                        android:background="@drawable/baseline_star_rate_white_24"
+                        android:backgroundTint="@color/yellow" />
+
+                    <ImageView
+                        android:id="@+id/activity_restaurant_item_stars_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="2dip"
+                        android:layout_weight="1"
+                        android:background="@drawable/baseline_star_rate_white_24"
+                        android:backgroundTint="@color/yellow" />
+
+                    <ImageView
+                        android:id="@+id/activity_restaurant_item_stars_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="2dip"
+                        android:layout_weight="1"
+                        android:background="@drawable/baseline_star_rate_white_24"
+                        android:backgroundTint="@color/yellow" />
+                </LinearLayout>
+
+
+
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/activity_restaurant_adress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5sp"
+                android:text="test"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="4.5"
+            android:orientation="horizontal">
+
+            <!-- BUTTON CALL -->
+            <Button
+                android:id="@+id/activity_restaurant_call_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableTop= "@drawable/baseline_call_black_24"
+                android:drawableTint="@color/colorPrimary"
+                android:text="@string/call"
+                android:textColor="@color/colorPrimary"
+                android:textSize="9dp"
+                style="@style/Widget.AppCompat.Button.Borderless"/>
+
+            <!-- BUTTON Like -->
+            <Button
+                android:id="@+id/activity_restaurant_like_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableTop= "@drawable/baseline_star_rate_white_24"
+                android:drawableTint="@color/colorPrimary"
+                android:text="@string/like"
+                android:textColor="@color/colorPrimary"
+                android:textSize="9dp"
+                style="@style/Widget.AppCompat.Button.Borderless"/>
+
+            <!-- BUTTON website -->
+            <Button
+                android:id="@+id/activity_restaurant_website_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableTop= "@drawable/baseline_public_black_24"
+                android:drawableTint="@color/colorPrimary"
+                android:text="@string/website"
+                android:textColor="@color/colorPrimary"
+                android:textSize="9dp"
+                style="@style/Widget.AppCompat.Button.Borderless"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 
 
