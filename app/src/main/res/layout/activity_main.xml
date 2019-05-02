@@ -6,10 +6,28 @@
     android:layout_height="match_parent"
     tools:context=".Activities.MainActivity">
 
-    <Button
-        android:id="@+id/test"
+    <LinearLayout
+        android:id="@+id/activity_main_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="test"/>
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/activity_main_facebook_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sign in with Facebook"/>
+
+
+        <Button
+            android:id="@+id/activity_main_google_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sign in with Google"/>
+
+
+    </LinearLayout>
+
+
 
 </android.support.constraint.ConstraintLayout>

@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.FrameLayout;
 
+import com.example.go4lunch.Base.BaseActivity;
 import com.example.go4lunch.Fragments.ListViewFragment;
 import com.example.go4lunch.Fragments.MapViewFragment;
 import com.example.go4lunch.Fragments.WorkmatesFragment;
@@ -27,7 +28,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class HomePageActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class HomePageActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     @BindView(R.id.home_page_activity_toolbar)
     Toolbar toolbar;
@@ -44,6 +45,8 @@ public class HomePageActivity extends AppCompatActivity implements NavigationVie
     @BindView(R.id.home_page_activity_workmates_button)
     Button workmatesButton;
 
+    @Override
+    public int getFragmentLayout() { return R.layout.activity_home_page; }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
