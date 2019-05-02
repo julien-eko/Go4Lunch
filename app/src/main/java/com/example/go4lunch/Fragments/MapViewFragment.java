@@ -20,7 +20,10 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.go4lunch.Activities.HomePageActivity;
+import com.example.go4lunch.Models.Search.NearbySearch;
+import com.example.go4lunch.Models.Search.Result;
 import com.example.go4lunch.R;
+import com.example.go4lunch.Utils.PlaceStream;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.GeoDataClient;
@@ -34,12 +37,19 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
 
 import static com.android.volley.VolleyLog.TAG;
 
@@ -61,9 +71,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean mLocationPermissionGranted;
 
-    // Keys for storing activity state.
-    private static final String KEY_CAMERA_POSITION = "camera_position";
-    private static final String KEY_LOCATION = "location";
+
 
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
@@ -77,10 +85,13 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
     private LatLng[] mLikelyPlaceLatLngs;
 
     private GoogleMap mMap;
-    private CameraPosition mCameraPosition;
     private ImageButton positionButton;
 
+    private Disposable disposable;
 
+    private List<Result> listRestaurant = new ArrayList<>();
+    private HashMap<String, Result> mMarkerMap = new HashMap<>();
+    private Marker marker;
 
     public static MapViewFragment newInstance() {
         MapViewFragment fragment = new MapViewFragment();
@@ -119,7 +130,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
 // Do other setup activities here too, as described elsewhere in this tutorial.
 
         // Turn on the My Location layer and the related control on the map.
@@ -129,20 +139,10 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
         getDeviceLocation();
 
         showCurrentPlace();
-        // Add a marker in Sydney and move the camera
-        //LatLng sydney = new LatLng(-34, 151);
-        //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
     @Override
     public void onClick(View v) {
-        //do what you want to do when button is clicked
-        Toast.makeText(getActivity(), "bonjour",
-                Toast.LENGTH_LONG).show();
-// Do other setup activities here too, as described elsewhere in this tutorial.
-
-
 
         // Get the current location of the device and set the position of the map.
         getDeviceLocation();
@@ -221,6 +221,10 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(mLastKnownLocation.getLatitude(),
                                             mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                            executeHttpRequestWithRetrofit(Double.toString(mLastKnownLocation.getLatitude()) + ","+Double.toString(mLastKnownLocation.getLongitude()));
+
+
+
                         } else {
                             Log.d(TAG, "Current location is null. Using defaults.");
                             Log.e(TAG, "Exception: %s", task.getException());
@@ -287,7 +291,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
 
                                 // Show a dialog offering the user the list of likely places, and add a
                                 // marker at the selected place.
-                                openPlacesDialog();
 
                             } else {
                                 Log.e(TAG, "Exception: %s", task.getException());
@@ -309,37 +312,67 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
         }
     }
 
-    private void openPlacesDialog() {
-        // Ask the user to choose the place where they are now.
-        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+
+
+    // -------------------
+    // HTTP (RxJAVA)
+    // -------------------
+
+    public void executeHttpRequestWithRetrofit(String location) {
+
+        this.disposable = PlaceStream.streamNearbySearch(location).subscribeWith(new DisposableObserver<NearbySearch>() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // The "which" argument contains the position of the selected item.
-                LatLng markerLatLng = mLikelyPlaceLatLngs[which];
-                String markerSnippet = mLikelyPlaceAddresses[which];
-                if (mLikelyPlaceAttributions[which] != null) {
-                    markerSnippet = markerSnippet + "\n" + mLikelyPlaceAttributions[which];
-                }
+            public void onNext(NearbySearch nearbySearch) {
+                addMarker(nearbySearch.getResults());
 
-                // Add a marker for the selected place, with an info window
-                // showing information about that place.
-                mMap.addMarker(new MarkerOptions()
-                        .title(mLikelyPlaceNames[which])
-                        .position(markerLatLng)
-                        .snippet(markerSnippet));
-
-                // Position the map's camera at the location of the marker.
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerLatLng,
-                        DEFAULT_ZOOM));
             }
-        };
 
-        // Display the dialog.
-        AlertDialog dialog = new AlertDialog.Builder(getContext())
-                .setTitle("test3")
-                .setItems(mLikelyPlaceNames, listener)
-                .show();
+            @Override
+            public void onError(Throwable e) {
+
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
 
+    private void disposeWhenDestroy() {
+        if (this.disposable != null && !this.disposable.isDisposed()) this.disposable.dispose();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        this.disposeWhenDestroy();
+    }
+
+
+    private void addMarker(List<Result> results) {
+
+        this.listRestaurant.addAll(results);
+        //DataSingleton.getInstance().setPlaceDetailList(listRestaurant);
+
+        if (listRestaurant.size() != 0 || listRestaurant != null) {
+            for (int i = 0; i < listRestaurant.size(); i++) {
+                if (listRestaurant.get(i) != null) {
+                    marker = mMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(listRestaurant.get(i).getGeometry().getLocation().getLat(),
+                                    listRestaurant.get(i).getGeometry().getLocation().getLng()))
+                            .title(listRestaurant.get(i).getName()));
+
+
+                    // Store in HashMap for Marker id for clickHandler
+                    mMarkerMap.put(marker.getId(), listRestaurant.get(i));
+                }
+            }
+
+        } else {
+            Log.d(TAG, "addMarkerOnMap is empty :" +listRestaurant.size());
+        }
+    }
 
 }
