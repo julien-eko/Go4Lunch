@@ -1,8 +1,11 @@
 package com.example.go4lunch.Activities;
 
 
+import android.content.ClipData;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -11,16 +14,25 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.go4lunch.Base.BaseActivity;
 import com.example.go4lunch.Fragments.ListViewFragment;
 import com.example.go4lunch.Fragments.MapViewFragment;
 import com.example.go4lunch.Fragments.WorkmatesFragment;
 import com.example.go4lunch.R;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.Map;
 
@@ -44,7 +56,11 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
     Button mapViewButton;
     @BindView(R.id.home_page_activity_workmates_button)
     Button workmatesButton;
-
+    private TextView email;
+    private TextView name;
+    private ImageView image;
+    private static final int SIGN_OUT_TASK = 10;
+    
     @Override
     public int getFragmentLayout() { return R.layout.activity_home_page; }
 
@@ -55,6 +71,12 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
         ButterKnife.bind(this);
 
+        View hView =  navigationView.inflateHeaderView(R.layout.home_page_nav_header);
+
+        email = (TextView) hView.findViewById(R.id.home_page_activity_email);
+        name = (TextView) hView.findViewById(R.id.home_page_activity_name);
+        image = (ImageView) hView.findViewById(R.id.home_page_activity_photo);
+
         this.configureToolBar();
 
         this.configureDrawerLayout();
@@ -62,6 +84,7 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
         this.configureNavigationView();
 
         this.configureFragment();
+
 
     }
     @Override
@@ -84,6 +107,7 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
         switch (id) {
 
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -94,12 +118,47 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
         int id = item.getItemId();
 
         switch (id) {
+            case R.id.home_page_menu_logout:
+                this.signOutUserFromFirebase();
+                break;
 
         }
 
         this.drawerLayout.closeDrawer(GravityCompat.START);
 
         return true;
+    }
+
+    // --------------------
+    // REST REQUESTS
+    // --------------------
+    // 1 - Create http requests (SignOut & Delete)
+
+    private void signOutUserFromFirebase(){
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
+    }
+
+    // --------------------
+    // UI
+    // --------------------
+
+
+    // 3 - Create OnCompleteListener called after tasks ended
+    private OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted(final int origin){
+        return new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                switch (origin){
+                    case SIGN_OUT_TASK:
+                        finish();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
     }
 
     private void configureToolBar() {
@@ -116,6 +175,27 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
     //Configure NavigationView
     private void configureNavigationView() {
         navigationView.setNavigationItemSelectedListener(this);
+
+        if (this.getCurrentUser() != null) {
+
+            //Get picture URL from Firebase
+            if (this.getCurrentUser().getPhotoUrl() != null) {
+                Glide.with(this)
+                        .load(this.getCurrentUser().getPhotoUrl())
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(image);
+            }
+
+            //Get email & username from Firebase
+            String email = TextUtils.isEmpty(this.getCurrentUser().getEmail()) ? "email not found" : this.getCurrentUser().getEmail();
+            String username = TextUtils.isEmpty(this.getCurrentUser().getDisplayName()) ? "no name found" : this.getCurrentUser().getDisplayName();
+
+            this.name.setText(username);
+
+            this.email.setText(email);
+
+
+        }
     }
     // --------------
     // Action
