@@ -37,7 +37,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         ab.setDisplayHomeAsUpEnabled(true);
     }
 
-    // --------------------
+
+
+    */
+
+// --------------------
     // ERROR HANDLER
     // --------------------
 
@@ -45,12 +49,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         return new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                //Toast.makeText(getApplicationContext(), getString(R.string.error_unknown_error), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "error_unknown_error", Toast.LENGTH_LONG).show();
             }
         };
     }
-
-    */
     // --------------------
     // UTILS
     // --------------------

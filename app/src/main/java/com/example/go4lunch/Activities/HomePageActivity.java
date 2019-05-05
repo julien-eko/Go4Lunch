@@ -31,6 +31,7 @@ import com.example.go4lunch.Fragments.ListViewFragment;
 import com.example.go4lunch.Fragments.MapViewFragment;
 import com.example.go4lunch.Fragments.WorkmatesFragment;
 import com.example.go4lunch.R;
+import com.example.go4lunch.Utils.Firestore.UserHelper;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -60,7 +61,7 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
     private TextView name;
     private ImageView image;
     private static final int SIGN_OUT_TASK = 10;
-    
+
     @Override
     public int getFragmentLayout() { return R.layout.activity_home_page; }
 
@@ -118,9 +119,18 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
         int id = item.getItemId();
 
         switch (id) {
+            case R.id.home_page_menu_your_lunch:
+
+
+
+                break;
+            case R.id.home_page_menu_settings:
+
+                break;
             case R.id.home_page_menu_logout:
                 this.signOutUserFromFirebase();
                 break;
+
 
         }
 
@@ -128,6 +138,7 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
         return true;
     }
+
 
     // --------------------
     // REST REQUESTS

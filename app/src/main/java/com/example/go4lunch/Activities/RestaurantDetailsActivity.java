@@ -1,25 +1,36 @@
 package com.example.go4lunch.Activities;
 
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
+import com.example.go4lunch.Base.BaseActivity;
 import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.Models.Details.Details;
+import com.example.go4lunch.Models.Firestore.User;
 import com.example.go4lunch.R;
+import com.example.go4lunch.Utils.Firestore.UserHelper;
 import com.example.go4lunch.Utils.PlaceStream;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 
-public class RestaurantDetailsActivity extends AppCompatActivity {
+public class RestaurantDetailsActivity extends BaseActivity {
 
     @BindView(R.id.activity_restaurant_adress)
     TextView adress;
@@ -33,27 +44,85 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     TextView nameRestaurant;
     @BindView(R.id.activity_restaurant_image)
     ImageView image;
+    @BindView(R.id.activity_restaurant_floating_action_button)
+    FloatingActionButton floatingActionButton;
+
     private Disposable disposable;
-    private String placeId;
+    private String restautantId;
+    private String restaurantChoice;
     private String photo;
     private String api_key;
 
+    @Override
+    public int getFragmentLayout() {
+        return R.layout.activity_restaurant_details;
+    }
 
     @Override
+
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_details);
         ButterKnife.bind(this);
-        placeId = getIntent().getStringExtra("restaurant");
+        restautantId = getIntent().getStringExtra("restaurant");
         photo = getIntent().getStringExtra("photo");
-        this.api_key= BuildConfig.ApiKey;
+        this.api_key = BuildConfig.ApiKey;
+
+        this.configureRestaurant();
+
+
         this.executeHttpRequestWithRetrofit();
     }
 
 
+    @OnClick(R.id.activity_restaurant_floating_action_button)
+    public void OnClickFloatingButton() {
+
+        if (floatingActionButton.isActivated() == false) {
+            Drawable drawable = getResources().getDrawable(R.drawable.baseline_done_white_24).mutate();
+            floatingActionButton.getBackground().setColorFilter(getResources().getColor(R.color.quantum_lightgreen),
+                    PorterDuff.Mode.SRC_ATOP);
+            floatingActionButton.setImageDrawable(drawable);
+            this.updateRestaurantIdInFirebase();
+            floatingActionButton.setActivated(true);
+        } else {
+            Drawable drawable = getResources().getDrawable(R.drawable.baseline_cancel_black_24).mutate();
+            floatingActionButton.getBackground().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+            floatingActionButton.setImageDrawable(drawable);
+            floatingActionButton.setActivated(false);
+        }
+    }
+
+
+    private void configureRestaurant(){
+
+        UserHelper.getUser(this.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                User currentUser = documentSnapshot.toObject(User.class);
+                restaurantChoice = currentUser.getRestaurantChoiceId();
+
+
+                if(restautantId.equals(restaurantChoice)){
+                    Drawable drawable = getResources().getDrawable(R.drawable.baseline_done_white_24).mutate();
+                    floatingActionButton.getBackground().setColorFilter(getResources().getColor(R.color.quantum_lightgreen),
+                            PorterDuff.Mode.SRC_ATOP);
+                    floatingActionButton.setImageDrawable(drawable);
+                    floatingActionButton.setActivated(true);
+                }
+
+            }
+        });
+
+    }
+
+
+
 
     private void executeHttpRequestWithRetrofit() {
-        disposable = PlaceStream.streamDetails(placeId).subscribeWith(new DisposableObserver<Details>() {
+        disposable = PlaceStream.streamDetails(restautantId).subscribeWith(new DisposableObserver<Details>() {
             @Override
             public void onNext(Details details) {
                 update(details);
@@ -105,7 +174,18 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
 
     }
+    // 3 - Update User Username
+    private void updateRestaurantIdInFirebase(){
 
+
+        String restaurant = restautantId;
+
+        if (this.getCurrentUser() != null){
+            if (!restaurant.isEmpty() &&  !restaurant.equals("no user found")){
+                UserHelper.updateChoiceRestaurant(restaurant, this.getCurrentUser().getUid());
+            }
+        }
+    }
 
     public static Integer rating (double rating){
         rating = (rating/5)*3;
@@ -120,4 +200,6 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
             return 3;
 
     }
+
+
 }

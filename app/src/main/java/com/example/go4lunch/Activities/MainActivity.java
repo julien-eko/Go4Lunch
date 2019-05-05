@@ -16,6 +16,7 @@ import butterknife.OnClick;
 
 import com.example.go4lunch.Base.BaseActivity;
 import com.example.go4lunch.R;
+import com.example.go4lunch.Utils.Firestore.UserHelper;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
@@ -49,6 +50,22 @@ public class MainActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         // 4 - Handle SignIn Activity response on activity result
         this.handleResponseAfterSignIn(requestCode, resultCode, data);
+    }
+    // --------------------
+    // REST REQUEST
+    // --------------------
+
+    // 1 - Http request that create user in firestore
+    private void createUserInFirestore(){
+
+        if (this.getCurrentUser() != null){
+
+            String urlPicture = (this.getCurrentUser().getPhotoUrl() != null) ? this.getCurrentUser().getPhotoUrl().toString() : null;
+            String username = this.getCurrentUser().getDisplayName();
+            String uid = this.getCurrentUser().getUid();
+
+            UserHelper.createUser(uid, username, urlPicture,null,null).addOnFailureListener(this.onFailureListener());
+        }
     }
 
     //-----------------
@@ -106,6 +123,7 @@ public class MainActivity extends BaseActivity {
 
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) { // SUCCESS
+                this.createUserInFirestore();
                 showSnackBar(this.layout, "conection ok");
                 this.startActivity();
             } else { // ERRORS
