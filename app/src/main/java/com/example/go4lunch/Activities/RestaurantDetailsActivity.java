@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,8 +17,10 @@ import com.bumptech.glide.RequestManager;
 import com.example.go4lunch.Base.BaseActivity;
 import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.Models.Details.Details;
+import com.example.go4lunch.Models.Firestore.Restaurants;
 import com.example.go4lunch.Models.Firestore.User;
 import com.example.go4lunch.R;
+import com.example.go4lunch.Utils.Firestore.RestaurantsHelper;
 import com.example.go4lunch.Utils.Firestore.UserHelper;
 import com.example.go4lunch.Utils.PlaceStream;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -48,12 +51,16 @@ public class RestaurantDetailsActivity extends BaseActivity {
     ImageView image;
     @BindView(R.id.activity_restaurant_floating_action_button)
     FloatingActionButton floatingActionButton;
+    @BindView(R.id.activity_restaurant_like_button)
+    Button likeButton;
+
 
     private Disposable disposable;
     private String restautantId;
     private String restaurantChoice;
     private String photo;
     private String api_key;
+    private Boolean like;
 
     @Override
     public int getFragmentLayout() {
@@ -72,7 +79,7 @@ public class RestaurantDetailsActivity extends BaseActivity {
         this.api_key = BuildConfig.ApiKey;
 
         this.configureRestaurant();
-
+        this.configurelike();
 
         this.executeHttpRequestWithRetrofit();
     }
@@ -92,12 +99,33 @@ public class RestaurantDetailsActivity extends BaseActivity {
             Drawable drawable = getResources().getDrawable(R.drawable.baseline_cancel_black_24).mutate();
             floatingActionButton.getBackground().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
             floatingActionButton.setImageDrawable(drawable);
+            this.deleteChoiceRestaurant();
             floatingActionButton.setActivated(false);
         }
     }
 
+    @OnClick(R.id.activity_restaurant_like_button)
+    public void OnClickLikeButton() {
+        if (floatingActionButton.isActivated() == false) {
+            Drawable drawable = getResources().getDrawable(R.drawable.baseline_star_rate_white_24).mutate();
+            drawable.setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+            likeButton.setText("");
+            likeButton.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
+            this.like = true;
+            this.restaurantFiresstore();
+            floatingActionButton.setActivated(true);
+        } else {
+            Drawable drawable = getResources().getDrawable(R.drawable.baseline_star_rate_white_24).mutate();
+            drawable.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
+            likeButton.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
+            likeButton.setText(getString(R.string.like));
+            this.like = false;
+            this.restaurantFiresstore();
+            floatingActionButton.setActivated(false);
+        }
+    }
 
-    private void configureRestaurant(){
+    private void configureRestaurant() {
 
         UserHelper.getUser(this.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -107,7 +135,7 @@ public class RestaurantDetailsActivity extends BaseActivity {
                 restaurantChoice = currentUser.getRestaurantChoiceId();
 
 
-                if(restautantId.equals(restaurantChoice)){
+                if (restautantId.equals(restaurantChoice)) {
                     Drawable drawable = getResources().getDrawable(R.drawable.baseline_done_white_24).mutate();
                     floatingActionButton.getBackground().setColorFilter(getResources().getColor(R.color.quantum_lightgreen),
                             PorterDuff.Mode.SRC_ATOP);
@@ -120,7 +148,52 @@ public class RestaurantDetailsActivity extends BaseActivity {
 
     }
 
+    private void configurelike(){
+        RestaurantsHelper.getRestaurant(this.getCurrentUser().getUid(),restautantId).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
 
+                Restaurants currentRestaurant = documentSnapshot.toObject(Restaurants.class);
+
+                if (currentRestaurant != null) {
+
+                    Boolean isLike = currentRestaurant.getLike();
+
+
+                    if (isLike) {
+                        Drawable drawable = getResources().getDrawable(R.drawable.baseline_star_rate_white_24).mutate();
+                        drawable.setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+                        likeButton.setText("");
+                        likeButton.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
+                        like = true;
+                        floatingActionButton.setActivated(true);
+                    }
+                }
+            }
+        });
+
+    }
+
+
+    private void restaurantFiresstore() {
+
+        RestaurantsHelper.getRestaurant(this.getCurrentUser().getUid(),restautantId).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                Restaurants currentRestaurant = documentSnapshot.toObject(Restaurants.class);
+
+
+                if (currentRestaurant == null) {
+                    RestaurantsHelper.createRestaurant(getCurrentUser().getUid(),restautantId, nameRestaurant.getText().toString(), like);
+                } else {
+                    RestaurantsHelper.updateLike(getCurrentUser().getUid(),like, restautantId);
+                }
+            }
+
+        });
+
+    }
 
 
     private void executeHttpRequestWithRetrofit() {
@@ -144,24 +217,24 @@ public class RestaurantDetailsActivity extends BaseActivity {
     }
 
 
-    public void update(Details details){
+    public void update(Details details) {
         this.adress.setText(details.getResult().getFormattedAddress());
         this.nameRestaurant.setText(details.getResult().getName());
 
         //rating
-        Double rating =details.getResult().getRating();
+        Double rating = details.getResult().getRating();
         Integer stars = rating(rating);
 
-        if (stars==0) {
+        if (stars == 0) {
             stars1.setVisibility(View.INVISIBLE);
             stars2.setVisibility(View.INVISIBLE);
             stars3.setVisibility(View.INVISIBLE);
         }
-        if (stars==1){
+        if (stars == 1) {
             stars1.setVisibility(View.INVISIBLE);
             stars2.setVisibility(View.INVISIBLE);
         }
-        if (stars==2){
+        if (stars == 2) {
             stars1.setVisibility(View.INVISIBLE);
         }
 
@@ -169,35 +242,42 @@ public class RestaurantDetailsActivity extends BaseActivity {
         if (photo != null) {
             String photoUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" + photo + "&key=" + api_key;
             Glide.with(this).load(photoUrl).into(image);
-        }else{
+        } else {
             Glide.with(this).load(R.drawable.restaurant).into(image);
         }
 
 
-
     }
+
     // 3 - Update User Username
-    private void updateRestaurantInFirebase(){
+    private void updateRestaurantInFirebase() {
 
 
         String restaurant = restautantId;
 
-        if (this.getCurrentUser() != null){
-            if (!restaurant.isEmpty() &&  !restaurant.equals("no user found")){
+        if (this.getCurrentUser() != null) {
+            if (!restaurant.isEmpty() && !restaurant.equals("no user found")) {
                 UserHelper.updateChoiceRestaurant(restaurant, this.getCurrentUser().getUid());
-                UserHelper.updateRestaurantPicture(photo,this.getCurrentUser().getUid());
+                UserHelper.updateRestaurantPicture(photo, this.getCurrentUser().getUid());
 
                 Calendar calendar = Calendar.getInstance();
                 int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
-                UserHelper.updateDate(dayOfYear,this.getCurrentUser().getUid());
+                UserHelper.updateDate(dayOfYear, this.getCurrentUser().getUid());
             }
         }
     }
 
-    public static Integer rating (double rating){
-        rating = (rating/5)*3;
+    private void deleteChoiceRestaurant(){
+        if (this.getCurrentUser() != null) {
+                UserHelper.updateChoiceRestaurant(null, this.getCurrentUser().getUid());
+                UserHelper.updateRestaurantPicture(null, this.getCurrentUser().getUid());
 
-        if(rating < 0.75 )
+        }
+    }
+    public static Integer rating(double rating) {
+        rating = (rating / 5) * 3;
+
+        if (rating < 0.75)
             return 0;
         if (rating >= 0.75 && rating < 1.5)
             return 1;

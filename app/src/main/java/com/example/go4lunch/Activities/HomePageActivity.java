@@ -2,6 +2,7 @@ package com.example.go4lunch.Activities;
 
 
 import android.content.ClipData;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -12,6 +13,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -153,11 +155,16 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
                 String restaurantChoiceId = currentUser.getRestaurantChoiceId();
                 String restaurantPicture = currentUser.getRestaurantPicture();
 
+                if(restaurantChoiceId != null) {
 
-                Intent restaurantDetails = new Intent(HomePageActivity.this, RestaurantDetailsActivity.class);
-                restaurantDetails.putExtra("restaurant", restaurantChoiceId);
-                restaurantDetails.putExtra("photo", restaurantPicture);
-                startActivity(restaurantDetails);
+                    Intent restaurantDetails = new Intent(HomePageActivity.this, RestaurantDetailsActivity.class);
+                    restaurantDetails.putExtra("restaurant", restaurantChoiceId);
+                    restaurantDetails.putExtra("photo", restaurantPicture);
+                    startActivity(restaurantDetails);
+                }else{
+                    Toast.makeText(getBaseContext(), "No restaurant selected today",
+                            Toast.LENGTH_LONG).show();
+                }
             }
         });
 
