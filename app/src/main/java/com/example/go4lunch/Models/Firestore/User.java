@@ -9,17 +9,19 @@ public class User {
     private String uid;
     private String username;
     @Nullable  private String urlPicture;
+    @Nullable  private String restaurantPicture;
     private String restaurantChoiceId;
-    private Date date;
+    private int date;
 
     public User() { }
 
-    public User(String uid, String username, String urlPicture,String restaurantChoiceId,Date date) {
+    public User(String uid, String username, String urlPicture,String restaurantChoiceId,int date, String restaurantPicture) {
         this.uid = uid;
         this.username = username;
         this.urlPicture = urlPicture;
         this.restaurantChoiceId = restaurantChoiceId;
         this.date = date;
+        this.restaurantPicture=restaurantPicture;
     }
 
     // --- GETTERS ---
@@ -27,12 +29,14 @@ public class User {
     public String getUsername() { return username; }
     public String getUrlPicture() { return urlPicture; }
     public String getRestaurantChoiceId() { return restaurantChoiceId; }
-    public Date getDate() { return date; }
+    public int getDate() { return date; }
+    public String getRestaurantPicture() { return restaurantPicture; }
 
     // --- SETTERS ---
     public void setUsername(String username) { this.username = username; }
     public void setUid(String uid) { this.uid = uid; }
     public void setUrlPicture(String urlPicture) { this.urlPicture = urlPicture; }
     public void setRestaurantId(String restaurantChoiceId) { this.restaurantChoiceId = restaurantChoiceId; }
-    public void setDate(Date date) { this.date = date; }
+    public void setDate(int date) { this.date = date; }
+    public void setRestaurantPicture(String restaurantPicture) { this.restaurantPicture = restaurantPicture; }
 }

@@ -15,13 +15,18 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import com.example.go4lunch.Base.BaseActivity;
+import com.example.go4lunch.Models.Firestore.User;
 import com.example.go4lunch.R;
 import com.example.go4lunch.Utils.Firestore.UserHelper;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.Arrays;
+import java.util.Calendar;
+
 import butterknife.OnClick;
 
 public class MainActivity extends BaseActivity {
@@ -56,32 +61,47 @@ public class MainActivity extends BaseActivity {
     // --------------------
 
     // 1 - Http request that create user in firestore
-    private void createUserInFirestore(){
+    private void createUserInFirestore() {
+        UserHelper.getUser(this.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
 
-        if (this.getCurrentUser() != null){
+                User currentUser = documentSnapshot.toObject(User.class);
 
-            String urlPicture = (this.getCurrentUser().getPhotoUrl() != null) ? this.getCurrentUser().getPhotoUrl().toString() : null;
-            String username = this.getCurrentUser().getDisplayName();
-            String uid = this.getCurrentUser().getUid();
+                String urlPicture = (getCurrentUser().getPhotoUrl() != null) ? getCurrentUser().getPhotoUrl().toString() : null;
+                String username = getCurrentUser().getDisplayName();
+                String uid = getCurrentUser().getUid();
 
-            UserHelper.createUser(uid, username, urlPicture,null,null).addOnFailureListener(this.onFailureListener());
-        }
+                if (currentUser == null) {
+                    UserHelper.createUser(uid, username, urlPicture,null, 0, null);
+                }else {
+                    Calendar calendar = Calendar.getInstance();
+                    int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
+
+                    if (dayOfYear != currentUser.getDate()) {
+
+                        UserHelper.createUser(uid, username, urlPicture, null, 0, null);
+                    }
+                }
+            }
+
+        });
+
     }
-
     //-----------------
     //ACTION
     //----------------
 
     @OnClick(R.id.activity_main_google_button)
     public void onClickGoogleButton(){
-        /*
+/*
         // 4 - Start appropriate activity
         if (this.isCurrentUserLogged()){
             this.startActivity();
         } else {
             this.startSignInActivity();
         }
-        */
+*/
         this.startSignInActivity();
     }
 

@@ -23,6 +23,8 @@ import com.example.go4lunch.Utils.PlaceStream;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 
+import java.util.Calendar;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -84,7 +86,7 @@ public class RestaurantDetailsActivity extends BaseActivity {
             floatingActionButton.getBackground().setColorFilter(getResources().getColor(R.color.quantum_lightgreen),
                     PorterDuff.Mode.SRC_ATOP);
             floatingActionButton.setImageDrawable(drawable);
-            this.updateRestaurantIdInFirebase();
+            this.updateRestaurantInFirebase();
             floatingActionButton.setActivated(true);
         } else {
             Drawable drawable = getResources().getDrawable(R.drawable.baseline_cancel_black_24).mutate();
@@ -175,7 +177,7 @@ public class RestaurantDetailsActivity extends BaseActivity {
 
     }
     // 3 - Update User Username
-    private void updateRestaurantIdInFirebase(){
+    private void updateRestaurantInFirebase(){
 
 
         String restaurant = restautantId;
@@ -183,6 +185,11 @@ public class RestaurantDetailsActivity extends BaseActivity {
         if (this.getCurrentUser() != null){
             if (!restaurant.isEmpty() &&  !restaurant.equals("no user found")){
                 UserHelper.updateChoiceRestaurant(restaurant, this.getCurrentUser().getUid());
+                UserHelper.updateRestaurantPicture(photo,this.getCurrentUser().getUid());
+
+                Calendar calendar = Calendar.getInstance();
+                int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
+                UserHelper.updateDate(dayOfYear,this.getCurrentUser().getUid());
             }
         }
     }

@@ -2,6 +2,7 @@ package com.example.go4lunch.Activities;
 
 
 import android.content.ClipData;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
@@ -30,10 +31,12 @@ import com.example.go4lunch.Base.BaseActivity;
 import com.example.go4lunch.Fragments.ListViewFragment;
 import com.example.go4lunch.Fragments.MapViewFragment;
 import com.example.go4lunch.Fragments.WorkmatesFragment;
+import com.example.go4lunch.Models.Firestore.User;
 import com.example.go4lunch.R;
 import com.example.go4lunch.Utils.Firestore.UserHelper;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.Map;
 
@@ -63,7 +66,9 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
     private static final int SIGN_OUT_TASK = 10;
 
     @Override
-    public int getFragmentLayout() { return R.layout.activity_home_page; }
+    public int getFragmentLayout() {
+        return R.layout.activity_home_page;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +77,7 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
         ButterKnife.bind(this);
 
-        View hView =  navigationView.inflateHeaderView(R.layout.home_page_nav_header);
+        View hView = navigationView.inflateHeaderView(R.layout.home_page_nav_header);
 
         email = (TextView) hView.findViewById(R.id.home_page_activity_email);
         name = (TextView) hView.findViewById(R.id.home_page_activity_name);
@@ -88,11 +93,13 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
 
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.home_page_toolbar, menu);
         return true;
     }
+
     @Override
     public void onBackPressed() {
         // Handle back click to close menu
@@ -120,9 +127,7 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
         switch (id) {
             case R.id.home_page_menu_your_lunch:
-
-
-
+                this.yourLunch();
                 break;
             case R.id.home_page_menu_settings:
 
@@ -139,13 +144,31 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
         return true;
     }
 
+    private void yourLunch() {
+        UserHelper.getUser(this.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                User currentUser = documentSnapshot.toObject(User.class);
+                String restaurantChoiceId = currentUser.getRestaurantChoiceId();
+                String restaurantPicture = currentUser.getRestaurantPicture();
+
+
+                Intent restaurantDetails = new Intent(HomePageActivity.this, RestaurantDetailsActivity.class);
+                restaurantDetails.putExtra("restaurant", restaurantChoiceId);
+                restaurantDetails.putExtra("photo", restaurantPicture);
+                startActivity(restaurantDetails);
+            }
+        });
+
+    }
 
     // --------------------
     // REST REQUESTS
     // --------------------
     // 1 - Create http requests (SignOut & Delete)
 
-    private void signOutUserFromFirebase(){
+    private void signOutUserFromFirebase() {
         AuthUI.getInstance()
                 .signOut(this)
                 .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
@@ -157,11 +180,11 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
 
     // 3 - Create OnCompleteListener called after tasks ended
-    private OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted(final int origin){
+    private OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted(final int origin) {
         return new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                switch (origin){
+                switch (origin) {
                     case SIGN_OUT_TASK:
                         finish();
                         break;
@@ -208,13 +231,13 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
         }
     }
+
     // --------------
     // Action
     // --------------
     @OnClick(R.id.home_page_activity_map_button)
-    public void onClickMapView(){
+    public void onClickMapView() {
         this.configureAndShowMapViewFragment();
-
 
 
         mapViewButton.setTextColor(getResources().getColor(R.color.colorPrimary));
@@ -223,14 +246,14 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
         Drawable drawable = getResources().getDrawable(R.drawable.baseline_map_black_24).mutate();
         drawable.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
-        mapViewButton.setCompoundDrawablesWithIntrinsicBounds(null,drawable,null,null);
-        listViewButton.setCompoundDrawablesWithIntrinsicBounds(null,getResources().getDrawable(R.drawable.baseline_view_list_black_24),null,null);
-        workmatesButton.setCompoundDrawablesWithIntrinsicBounds(null,getResources().getDrawable(R.drawable.baseline_people_black_24),null,null);
+        mapViewButton.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
+        listViewButton.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.baseline_view_list_black_24), null, null);
+        workmatesButton.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.baseline_people_black_24), null, null);
 
     }
 
     @OnClick(R.id.home_page_activity_list_view_button)
-    public void onClickListView(){
+    public void onClickListView() {
         this.configureAndShowListViewFragment();
         mapViewButton.setTextColor(getResources().getColor(R.color.black));
         listViewButton.setTextColor(getResources().getColor(R.color.colorPrimary));
@@ -238,13 +261,13 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
         Drawable drawable = getResources().getDrawable(R.drawable.baseline_view_list_black_24).mutate();
         drawable.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
-        mapViewButton.setCompoundDrawablesWithIntrinsicBounds(null,getResources().getDrawable(R.drawable.baseline_map_black_24),null,null);
-        listViewButton.setCompoundDrawablesWithIntrinsicBounds(null,drawable,null,null);
-        workmatesButton.setCompoundDrawablesWithIntrinsicBounds(null,getResources().getDrawable(R.drawable.baseline_people_black_24),null,null);
+        mapViewButton.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.baseline_map_black_24), null, null);
+        listViewButton.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
+        workmatesButton.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.baseline_people_black_24), null, null);
     }
 
     @OnClick(R.id.home_page_activity_workmates_button)
-    public void onClickWokmates(){
+    public void onClickWokmates() {
         this.configureAndShowWorkmatesFragment();
         mapViewButton.setTextColor(getResources().getColor(R.color.black));
         listViewButton.setTextColor(getResources().getColor(R.color.black));
@@ -252,20 +275,20 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
         Drawable drawable = getResources().getDrawable(R.drawable.baseline_people_black_24).mutate();
         drawable.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
-        mapViewButton.setCompoundDrawablesWithIntrinsicBounds(null,getResources().getDrawable(R.drawable.baseline_map_black_24),null,null);
-        listViewButton.setCompoundDrawablesWithIntrinsicBounds(null,getResources().getDrawable(R.drawable.baseline_view_list_black_24),null,null);
-        workmatesButton.setCompoundDrawablesWithIntrinsicBounds(null,drawable,null,null);
+        mapViewButton.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.baseline_map_black_24), null, null);
+        listViewButton.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.baseline_view_list_black_24), null, null);
+        workmatesButton.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
 
     }
 
     // --------------
     // FRAGMENTS
     // --------------
-    private void configureFragment(){
+    private void configureFragment() {
         mapViewButton.setTextColor(getResources().getColor(R.color.colorPrimary));
         Drawable drawable = getResources().getDrawable(R.drawable.baseline_map_black_24).mutate();
         drawable.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
-        mapViewButton.setCompoundDrawablesWithIntrinsicBounds(null,drawable,null,null);
+        mapViewButton.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
 
         MapViewFragment mapViewFragment = new MapViewFragment();
 
@@ -275,7 +298,7 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
     }
 
 
-    private void configureAndShowMapViewFragment(){
+    private void configureAndShowMapViewFragment() {
         MapViewFragment mapViewFragment = new MapViewFragment();
 
         getSupportFragmentManager().beginTransaction()
@@ -284,21 +307,21 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
     }
 
-    private void configureAndShowListViewFragment(){
-        ListViewFragment listViewFragment=new ListViewFragment();
+    private void configureAndShowListViewFragment() {
+        ListViewFragment listViewFragment = new ListViewFragment();
         // A - Get FragmentManager (Support) and Try to find existing instance of fragment in FrameLayout container
 
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.home_page_activity_frame_layout, listViewFragment)
-                    .commit();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.home_page_activity_frame_layout, listViewFragment)
+                .commit();
 
     }
 
-    private void configureAndShowWorkmatesFragment(){
-        WorkmatesFragment workmatesFragment =new WorkmatesFragment();
+    private void configureAndShowWorkmatesFragment() {
+        WorkmatesFragment workmatesFragment = new WorkmatesFragment();
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.home_page_activity_frame_layout,workmatesFragment)
+                .replace(R.id.home_page_activity_frame_layout, workmatesFragment)
                 .commit();
 
     }
