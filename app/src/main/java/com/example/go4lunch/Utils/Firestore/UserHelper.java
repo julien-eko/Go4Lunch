@@ -33,8 +33,13 @@ public class UserHelper {
         return UserHelper.getUsersCollection().document(uid).get();
     }
 
+    public static Query getUserByRestaurantId(String restaurantChoiceId){
+        return UserHelper.getUsersCollection().whereEqualTo("restaurantChoiceId",restaurantChoiceId);
+    }
+
+
     public static Query getAllUsers(){
-        return UserHelper.getUsersCollection();
+        return UserHelper.getUsersCollection().orderBy("restaurantChoiceId", Query.Direction.DESCENDING);
     }
 
     // --- UPDATE ---

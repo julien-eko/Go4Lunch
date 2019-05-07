@@ -53,7 +53,7 @@ public class WorkmatesFragment extends Fragment {
         //Reset list
         //this.list = new ArrayList<>();
         //Create adapter passing the list of users
-        this.adapter = new WorkmatesAdapter(generateOptionsForAdapter(UserHelper.getAllUsers()), Glide.with(this));
+        this.adapter = new WorkmatesAdapter(generateOptionsForAdapter(UserHelper.getAllUsers()), Glide.with(this),false);
         //Attach the adapter to the recyclerview to populate items
         this.recyclerView.setAdapter(this.adapter);
         //Set layout manager to position the items

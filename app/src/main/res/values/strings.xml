@@ -14,6 +14,9 @@
     <string name="like">LIKE</string>
     <string name="website">WEBSITE</string>
     <string name="unlike">Like</string>
-    <string name="is_eating_at">is eating at:</string>
-    <string name="hasnt_decided_yet">hasn\'t decided yet</string>
+    <string name="is_eating_at">\t is eating at:\t </string>
+    <string name="hasnt_decided_yet">\t hasn\'t decided yet</string>
+    <string name="email_not_found">email not found</string>
+    <string name="no_name_found">no name found</string>
+    <string name="is_joining">\t is joining!</string>
 </resources>

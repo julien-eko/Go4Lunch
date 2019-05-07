@@ -21,11 +21,13 @@ public class WorkmatesAdapter extends FirestoreRecyclerAdapter<User,WorkmatesVie
 
 
     private RequestManager glide;
+    private Boolean isActivityRestaurant;
 
     // CONSTRUCTOR
-    public WorkmatesAdapter(@NonNull FirestoreRecyclerOptions<User> options, RequestManager glide) {
+    public WorkmatesAdapter(@NonNull FirestoreRecyclerOptions<User> options, RequestManager glide,Boolean isActivityRestaurant) {
         super(options);
         this.glide = glide;
+        this.isActivityRestaurant=isActivityRestaurant;
     }
 
 
@@ -36,7 +38,7 @@ public class WorkmatesAdapter extends FirestoreRecyclerAdapter<User,WorkmatesVie
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.fragment_workmates_item, parent, false);
 
-        return new WorkmatesViewHolder(context,view);
+        return new WorkmatesViewHolder(context,view,isActivityRestaurant);
     }
 
 

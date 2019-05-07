@@ -5,6 +5,8 @@ import android.graphics.drawable.Drawable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -23,8 +25,11 @@ import com.example.go4lunch.R;
 import com.example.go4lunch.Utils.Firestore.RestaurantsHelper;
 import com.example.go4lunch.Utils.Firestore.UserHelper;
 import com.example.go4lunch.Utils.PlaceStream;
+import com.example.go4lunch.Views.WorkmatesAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Query;
 
 import java.util.Calendar;
 
@@ -53,8 +58,11 @@ public class RestaurantDetailsActivity extends BaseActivity {
     FloatingActionButton floatingActionButton;
     @BindView(R.id.activity_restaurant_like_button)
     Button likeButton;
+    @BindView(R.id.activity_restaurant_details_recycler_view)
+    RecyclerView recyclerView;
 
 
+    private WorkmatesAdapter adapter;
     private Disposable disposable;
     private String restautantId;
     private String restaurantChoice;
@@ -77,7 +85,7 @@ public class RestaurantDetailsActivity extends BaseActivity {
         restautantId = getIntent().getStringExtra("restaurant");
         photo = getIntent().getStringExtra("photo");
         this.api_key = BuildConfig.ApiKey;
-
+        this.configureRecyclerView();
         this.configureRestaurant();
         this.configurelike();
 
@@ -148,8 +156,8 @@ public class RestaurantDetailsActivity extends BaseActivity {
 
     }
 
-    private void configurelike(){
-        RestaurantsHelper.getRestaurant(this.getCurrentUser().getUid(),restautantId).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+    private void configurelike() {
+        RestaurantsHelper.getRestaurant(this.getCurrentUser().getUid(), restautantId).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
 
@@ -177,7 +185,7 @@ public class RestaurantDetailsActivity extends BaseActivity {
 
     private void restaurantFiresstore() {
 
-        RestaurantsHelper.getRestaurant(this.getCurrentUser().getUid(),restautantId).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        RestaurantsHelper.getRestaurant(this.getCurrentUser().getUid(), restautantId).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
 
@@ -185,9 +193,9 @@ public class RestaurantDetailsActivity extends BaseActivity {
 
 
                 if (currentRestaurant == null) {
-                    RestaurantsHelper.createRestaurant(getCurrentUser().getUid(),restautantId, nameRestaurant.getText().toString(), like);
+                    RestaurantsHelper.createRestaurant(getCurrentUser().getUid(), restautantId, nameRestaurant.getText().toString(), like);
                 } else {
-                    RestaurantsHelper.updateLike(getCurrentUser().getUid(),like, restautantId);
+                    RestaurantsHelper.updateLike(getCurrentUser().getUid(), like, restautantId);
                 }
             }
 
@@ -259,7 +267,7 @@ public class RestaurantDetailsActivity extends BaseActivity {
             if (!restaurant.isEmpty() && !restaurant.equals("no user found")) {
                 UserHelper.updateChoiceRestaurant(restaurant, this.getCurrentUser().getUid());
                 UserHelper.updateRestaurantPicture(photo, this.getCurrentUser().getUid());
-                UserHelper.updateRestaurantName(nameRestaurant.getText().toString(),this.getCurrentUser().getUid());
+                UserHelper.updateRestaurantName(nameRestaurant.getText().toString(), this.getCurrentUser().getUid());
 
                 Calendar calendar = Calendar.getInstance();
                 int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
@@ -268,13 +276,14 @@ public class RestaurantDetailsActivity extends BaseActivity {
         }
     }
 
-    private void deleteChoiceRestaurant(){
+    private void deleteChoiceRestaurant() {
         if (this.getCurrentUser() != null) {
-                UserHelper.updateChoiceRestaurant(null, this.getCurrentUser().getUid());
-                UserHelper.updateRestaurantPicture(null, this.getCurrentUser().getUid());
-                UserHelper.updateRestaurantName(null,this.getCurrentUser().getUid());
+            UserHelper.updateChoiceRestaurant(null, this.getCurrentUser().getUid());
+            UserHelper.updateRestaurantPicture(null, this.getCurrentUser().getUid());
+            UserHelper.updateRestaurantName(null, this.getCurrentUser().getUid());
         }
     }
+
     public static Integer rating(double rating) {
         rating = (rating / 5) * 3;
 
@@ -289,5 +298,18 @@ public class RestaurantDetailsActivity extends BaseActivity {
 
     }
 
+    private void configureRecyclerView ()
+    {
+        this.adapter = new WorkmatesAdapter(generateOptionsForAdapter(UserHelper.getUserByRestaurantId(restautantId)),Glide.with(this),true);
+        this.recyclerView.setAdapter(this.adapter);
+        this.recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
 
+    private FirestoreRecyclerOptions<User> generateOptionsForAdapter (Query query)
+    {
+        return new FirestoreRecyclerOptions.Builder<User>()
+                .setQuery(query, User.class)
+                .setLifecycleOwner(this)
+                .build();
+    }
 }

@@ -60,12 +60,13 @@ public class ListViewFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         this.configureRecyclerView();
+        this.myLocation();
         //Execute stream after UI creation
         this.executeHttpRequestWithRetrofit();
         //Configure the SwipeRefreshLayout
         this.configureSwipeRefreshLayout();
         this.configureOnClickRecyclerView();
-        this.myLocation();
+
 
 
         return view;
