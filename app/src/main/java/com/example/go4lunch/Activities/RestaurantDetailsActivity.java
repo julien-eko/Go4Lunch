@@ -259,6 +259,7 @@ public class RestaurantDetailsActivity extends BaseActivity {
             if (!restaurant.isEmpty() && !restaurant.equals("no user found")) {
                 UserHelper.updateChoiceRestaurant(restaurant, this.getCurrentUser().getUid());
                 UserHelper.updateRestaurantPicture(photo, this.getCurrentUser().getUid());
+                UserHelper.updateRestaurantName(nameRestaurant.getText().toString(),this.getCurrentUser().getUid());
 
                 Calendar calendar = Calendar.getInstance();
                 int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
@@ -271,7 +272,7 @@ public class RestaurantDetailsActivity extends BaseActivity {
         if (this.getCurrentUser() != null) {
                 UserHelper.updateChoiceRestaurant(null, this.getCurrentUser().getUid());
                 UserHelper.updateRestaurantPicture(null, this.getCurrentUser().getUid());
-
+                UserHelper.updateRestaurantName(null,this.getCurrentUser().getUid());
         }
     }
     public static Integer rating(double rating) {
