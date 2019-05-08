@@ -6,6 +6,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Date;
 
@@ -33,10 +34,15 @@ public class UserHelper {
         return UserHelper.getUsersCollection().document(uid).get();
     }
 
+
     public static Query getUserByRestaurantId(String restaurantChoiceId){
         return UserHelper.getUsersCollection().whereEqualTo("restaurantChoiceId",restaurantChoiceId);
     }
 
+    public static Task<QuerySnapshot> getUsersInterestedByRestaurant(String restaurantId)
+    {
+        return getUserByRestaurantId(restaurantId).get();
+    }
 
     public static Query getAllUsers(){
         return UserHelper.getUsersCollection().orderBy("restaurantChoiceId", Query.Direction.DESCENDING);

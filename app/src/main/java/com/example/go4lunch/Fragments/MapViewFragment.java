@@ -1,7 +1,13 @@
 package com.example.go4lunch.Fragments;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -20,12 +26,14 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.go4lunch.Activities.HomePageActivity;
+import com.example.go4lunch.Activities.RestaurantDetailsActivity;
 import com.example.go4lunch.Models.Firestore.User;
 import com.example.go4lunch.Models.Search.NearbySearch;
 import com.example.go4lunch.Models.Search.Result;
 import com.example.go4lunch.R;
 import com.example.go4lunch.Utils.Firestore.UserHelper;
 import com.example.go4lunch.Utils.PlaceStream;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.GeoDataClient;
@@ -37,14 +45,20 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,7 +72,7 @@ import io.reactivex.observers.DisposableObserver;
 import static com.android.volley.VolleyLog.TAG;
 
 
-public class MapViewFragment extends Fragment implements OnMapReadyCallback,View.OnClickListener  {
+public class MapViewFragment extends Fragment implements OnMapReadyCallback,View.OnClickListener, GoogleMap.OnMarkerClickListener {
 
 
     // The entry points to the Places API.
@@ -74,7 +88,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
     private static final int DEFAULT_ZOOM = 15;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean mLocationPermissionGranted;
-
 
 
     // The geographical location where the device is currently located. That is, the last-known
@@ -94,14 +107,14 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
     private Disposable disposable;
 
     private List<Result> listRestaurant = new ArrayList<>();
-    private HashMap<String, Result> mMarkerMap = new HashMap<>();
+    private HashMap<String, Result> markerMap = new HashMap<>();
     private Marker marker;
+
 
     public static MapViewFragment newInstance() {
         MapViewFragment fragment = new MapViewFragment();
         return fragment;
     }
-
 
 
     @Nullable
@@ -202,7 +215,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
                 mLastKnownLocation = null;
                 getLocationPermission();
             }
-        } catch (SecurityException e)  {
+        } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage());
         }
     }
@@ -225,8 +238,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(mLastKnownLocation.getLatitude(),
                                             mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-                            executeHttpRequestWithRetrofit(Double.toString(mLastKnownLocation.getLatitude()) + ","+Double.toString(mLastKnownLocation.getLongitude()));
-
+                            executeHttpRequestWithRetrofit(Double.toString(mLastKnownLocation.getLatitude()) + "," + Double.toString(mLastKnownLocation.getLongitude()));
 
 
                         } else {
@@ -238,7 +250,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
                     }
                 });
             }
-        } catch(SecurityException e)  {
+        } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage());
         }
     }
@@ -251,8 +263,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
         if (mLocationPermissionGranted) {
             // Get the likely places - that is, the businesses and other points of interest that
             // are the best match for the device's current location.
-            @SuppressWarnings("MissingPermission") final
-            Task<PlaceLikelihoodBufferResponse> placeResult =
+            @SuppressWarnings("MissingPermission") final Task<PlaceLikelihoodBufferResponse> placeResult =
                     mPlaceDetectionClient.getCurrentPlace(null);
             placeResult.addOnCompleteListener
                     (new OnCompleteListener<PlaceLikelihoodBufferResponse>() {
@@ -317,7 +328,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
     }
 
 
-
     // -------------------
     // HTTP (RxJAVA)
     // -------------------
@@ -328,6 +338,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
             @Override
             public void onNext(NearbySearch nearbySearch) {
                 addMarker(nearbySearch.getResults());
+
 
             }
 
@@ -359,25 +370,82 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
 
         this.listRestaurant.addAll(results);
         //DataSingleton.getInstance().setPlaceDetailList(listRestaurant);
-
+        mMap.setOnMarkerClickListener(this);
         if (listRestaurant.size() != 0 || listRestaurant != null) {
             for (int i = 0; i < listRestaurant.size(); i++) {
                 if (listRestaurant.get(i) != null) {
+
                     marker = mMap.addMarker(new MarkerOptions()
                             .position(new LatLng(listRestaurant.get(i).getGeometry().getLocation().getLat(),
                                     listRestaurant.get(i).getGeometry().getLocation().getLng()))
-                            .title(listRestaurant.get(i).getName()));
+                            .title(listRestaurant.get(i).getName())
+                    .icon(bitmapDescriptorFromVector(getActivity(),R.drawable.restaurant_marker_orange)));
 
-
+                    this.changeMarker(listRestaurant.get(i).getPlaceId(),marker);
                     // Store in HashMap for Marker id for clickHandler
-                    mMarkerMap.put(marker.getId(), listRestaurant.get(i));
+
+                    this.markerMap.put(marker.getId(), listRestaurant.get(i));
                 }
             }
 
         } else {
-            Log.d(TAG, "addMarkerOnMap is empty :" +listRestaurant.size());
+            Log.d(TAG, "addMarkerOnMap is empty :" + listRestaurant.size());
         }
     }
+
+
+    private void changeMarker(String restaurantId, final Marker marker) {
+
+        UserHelper.getUsersInterestedByRestaurant(restaurantId).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot querySnapshot) {
+
+               if(querySnapshot.size()>0){
+
+                   marker.setIcon(bitmapDescriptorFromVector(getActivity(),R.drawable.restaurant_marker_green));
+               }
+
+
+            }
+        });
+    }
+
+
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+
+
+        Result result = this.markerMap.get(marker.getId());
+        String photo;
+        if(result.getPhotos() != null){
+            if(result.getPhotos().get(0).getPhotoReference() != null){
+                photo = result.getPhotos().get(0).getPhotoReference();
+            }else {
+                photo =null;
+            }
+        }else{
+            photo=null;
+        }
+
+        //Toast.makeText(getActivity(),photo, Toast.LENGTH_LONG).show();
+        Intent restaurantDetails = new Intent(MapViewFragment.this.getActivity(), RestaurantDetailsActivity.class);
+        restaurantDetails.putExtra("restaurant",result.getPlaceId());
+        restaurantDetails.putExtra("photo", photo);
+        startActivity(restaurantDetails);
+
+        return true;
+    }
+
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+
 
 
 }
