@@ -61,6 +61,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -144,6 +145,15 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
         return view;
     }
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // 5 - Update UI when activity is resuming
+        this.getDeviceLocation();
+    }
+
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -162,6 +172,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
     public void onClick(View v) {
 
         // Get the current location of the device and set the position of the map.
+        mMap.clear();
+
         getDeviceLocation();
 
         showCurrentPlace();
@@ -400,8 +412,20 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
             @Override
             public void onSuccess(QuerySnapshot querySnapshot) {
 
-               if(querySnapshot.size()>0){
+                Calendar calendar = Calendar.getInstance();
+                int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
+                int j=0;
+                for(int i=0;i<querySnapshot.size();i++){
 
+                    if(querySnapshot.getDocuments().get(i).get("date").toString().equals(Integer.toString(dayOfYear))){
+                        if(!querySnapshot.getDocuments().get(i).get("uid").equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+                            j=j+1;
+                        }
+
+                    }
+                }
+
+               if(j>0 ){
                    marker.setIcon(bitmapDescriptorFromVector(getActivity(),R.drawable.restaurant_marker_green));
                }
 

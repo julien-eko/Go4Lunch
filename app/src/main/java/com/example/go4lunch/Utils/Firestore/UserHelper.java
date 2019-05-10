@@ -8,6 +8,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 public class UserHelper {
@@ -38,6 +41,7 @@ public class UserHelper {
     public static Query getUserByRestaurantId(String restaurantChoiceId){
         return UserHelper.getUsersCollection().whereEqualTo("restaurantChoiceId",restaurantChoiceId);
     }
+
 
     public static Task<QuerySnapshot> getUsersInterestedByRestaurant(String restaurantId)
     {
