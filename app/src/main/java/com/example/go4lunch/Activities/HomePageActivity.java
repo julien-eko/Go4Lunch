@@ -48,6 +48,7 @@ import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -87,6 +88,8 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
     private double longitude;
     private double latitude;
     private List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+
+
 
     @Override
     public int getFragmentLayout() {
@@ -136,9 +139,14 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+
         switch (id) {
             case R.id.action_search:
-                Toast.makeText(this, "This is my Toast message!", Toast.LENGTH_LONG).show();
+                Intent intent = new Autocomplete.IntentBuilder(
+                        AutocompleteActivityMode.FULLSCREEN, fields)
+                        .setTypeFilter(TypeFilter.ADDRESS)
+                        .build(this);
+                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
                 break;
 
         }
@@ -388,6 +396,7 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
     }
 
     private void updateUI(NearbySearch nearbySearch){
+
         for(int i=0;i<nearbySearch.getResults().size();i++){
 
         }
