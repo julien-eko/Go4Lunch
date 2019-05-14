@@ -125,6 +125,7 @@ public class ListViewFragment extends Fragment {
             @Override
             public void onNext(NearbySearch nearbySearch) {
                 updateUI(nearbySearch);
+
             }
 
             @Override
@@ -148,9 +149,23 @@ public class ListViewFragment extends Fragment {
     private void updateUI(NearbySearch nearbySearch) {
         swipeRefreshLayout.setRefreshing(false);
         this.list.clear();
-        this.myLocation();
+        //this.myLocation();
         ListRestaurant.ListNearbySearch(this.list,nearbySearch,longitude,latitude);
         adapter.notifyDataSetChanged();
+    }
+
+    public void updateAutocomplete(double latitude,double longitude){
+
+        Log.i("place", "Place: " + longitude + ", " + latitude);
+        this.configureRecyclerView();
+        this.latitude=latitude;
+        this.longitude=longitude;
+        //Execute stream after UI creation
+        this.executeHttpRequestWithRetrofit();
+        //Configure the SwipeRefreshLayout
+
+        this.configureSwipeRefreshLayout();
+        this.configureOnClickRecyclerView();
     }
 
     public void myLocation() {

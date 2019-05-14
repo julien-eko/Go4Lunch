@@ -50,8 +50,13 @@ public class ListRestaurant {
             }
 
             //set number of stars (0..3)
-            Double rating =result.getRating();
-            restaurant.setStars(rating(rating));
+            if(result.getRating()!=null){
+                Double rating =result.getRating();
+                restaurant.setStars(rating(rating));
+            }else{
+                restaurant.setStars(0);
+            }
+
 
 
             if(result.getPhotos() != null){

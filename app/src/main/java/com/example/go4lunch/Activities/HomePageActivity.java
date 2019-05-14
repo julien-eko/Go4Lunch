@@ -35,6 +35,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.go4lunch.Base.BaseActivity;
+import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.Fragments.ListViewFragment;
 import com.example.go4lunch.Fragments.MapViewFragment;
 import com.example.go4lunch.Fragments.WorkmatesFragment;
@@ -44,18 +45,22 @@ import com.example.go4lunch.R;
 import com.example.go4lunch.Utils.Firestore.UserHelper;
 import com.example.go4lunch.Utils.PlaceStream;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -87,7 +92,9 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
     private int AUTOCOMPLETE_REQUEST_CODE = 1;
     private double longitude;
     private double latitude;
-    private List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+    private List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG);
+    private MapViewFragment mapViewFragment;
+    private  ListViewFragment listViewFragment;
 
 
 
@@ -104,6 +111,8 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
         ButterKnife.bind(this);
 
         View hView = navigationView.inflateHeaderView(R.layout.home_page_nav_header);
+
+        Places.initialize(getApplicationContext(), BuildConfig.ApiKey);
 
         email = (TextView) hView.findViewById(R.id.home_page_activity_email);
         name = (TextView) hView.findViewById(R.id.home_page_activity_name);
@@ -142,15 +151,44 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
         switch (id) {
             case R.id.action_search:
-                Intent intent = new Autocomplete.IntentBuilder(
-                        AutocompleteActivityMode.FULLSCREEN, fields)
-                        .setTypeFilter(TypeFilter.ADDRESS)
-                        .build(this);
-                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
+                this.launchAutocompleteActivity();
                 break;
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                 Place place = Autocomplete.getPlaceFromIntent(data);
+                //Intent restaurantDetails = new Intent(HomePageActivity.this, RestaurantDetailsActivity.class);
+                //restaurantDetails.putExtra("restaurant", place.getId());
+                //restaurantDetails.putExtra("photo","CmRaAAAAlUFjg43lm9juZcUAjXSB1gYhy7duencSe3rO881TDyGmgJfR9HSucAUoXCw3pq8LnD9nrBrSI2zKFlKsRMcohDWCf745VWYqqFx1V1AYriTXy428h2WajrZVxyGdj5wXEhA3fEMBT3owiQuHjVAV23KgGhQ8jEER6spd1wo0LQWuLP4dYN7P2g");
+                //startActivity(restaurantDetails);
+
+                if(mapViewFragment != null && mapViewFragment.isVisible()){
+                    mapViewFragment.updateAutocomplete(place.getLatLng().latitude,place.getLatLng().longitude);
+                    Log.i("mapViewFragment", "map");
+                }
+                else if(listViewFragment != null && listViewFragment.isVisible() ){
+                    listViewFragment.updateAutocomplete(place.getLatLng().latitude,place.getLatLng().longitude);
+                    Log.i("listViewFragment", "list");
+                }else{
+
+                    Log.i("workmates", "workmate");
+                }
+
+                Log.i("place", "Place: " + place.getLatLng().longitude + ", " + place.getLatLng().latitude);
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.i("error autocomplete", status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
     }
 
     @Override
@@ -328,7 +366,7 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
         drawable.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
         mapViewButton.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
 
-        MapViewFragment mapViewFragment = new MapViewFragment();
+        mapViewFragment = new MapViewFragment();
 
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.home_page_activity_frame_layout, mapViewFragment)
@@ -337,20 +375,20 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
 
     private void configureAndShowMapViewFragment() {
-        MapViewFragment mapViewFragment = new MapViewFragment();
+        mapViewFragment = new MapViewFragment();
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.home_page_activity_frame_layout, mapViewFragment)
+                .replace(R.id.home_page_activity_frame_layout, mapViewFragment,"mapViewFragment")
                 .commit();
 
     }
 
     private void configureAndShowListViewFragment() {
-        ListViewFragment listViewFragment = new ListViewFragment();
+         listViewFragment = new ListViewFragment();
         // A - Get FragmentManager (Support) and Try to find existing instance of fragment in FrameLayout container
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.home_page_activity_frame_layout, listViewFragment)
+                .replace(R.id.home_page_activity_frame_layout, listViewFragment,"listViewFragment")
                 .commit();
 
     }
@@ -359,7 +397,7 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
         WorkmatesFragment workmatesFragment = new WorkmatesFragment();
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.home_page_activity_frame_layout, workmatesFragment)
+                .replace(R.id.home_page_activity_frame_layout, workmatesFragment,"WorkmatesFragment")
                 .commit();
 
     }
@@ -402,4 +440,18 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
         }
 
     }
+
+    private void launchAutocompleteActivity() {
+
+
+        //Log.i("error autocomplete", "error");
+        Intent intent = new Autocomplete.IntentBuilder(
+                AutocompleteActivityMode.OVERLAY,fields)
+                .build(this);
+        startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
+
+
+    }
+
+
 }

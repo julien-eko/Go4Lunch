@@ -73,7 +73,7 @@ import io.reactivex.observers.DisposableObserver;
 import static com.android.volley.VolleyLog.TAG;
 
 
-public class MapViewFragment extends Fragment implements OnMapReadyCallback,View.OnClickListener, GoogleMap.OnMarkerClickListener {
+public class MapViewFragment extends Fragment implements OnMapReadyCallback, View.OnClickListener, GoogleMap.OnMarkerClickListener {
 
 
     // The entry points to the Places API.
@@ -96,11 +96,11 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
     private Location mLastKnownLocation;
 
     // Used for selecting the current place.
-    private static final int M_MAX_ENTRIES = 5;
-    private String[] mLikelyPlaceNames;
-    private String[] mLikelyPlaceAddresses;
-    private String[] mLikelyPlaceAttributions;
-    private LatLng[] mLikelyPlaceLatLngs;
+    //private static final int M_MAX_ENTRIES = 5;
+    //private String[] mLikelyPlaceNames;
+    //private String[] mLikelyPlaceAddresses;
+    //private String[] mLikelyPlaceAttributions;
+    //private LatLng[] mLikelyPlaceLatLngs;
 
     private GoogleMap mMap;
     private ImageButton positionButton;
@@ -146,12 +146,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
     }
 
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        // 5 - Update UI when activity is resuming
-        this.getDeviceLocation();
-    }
+    
 
 
     @Override
@@ -165,7 +160,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
         // Get the current location of the device and set the position of the map.
         getDeviceLocation();
 
-        showCurrentPlace();
     }
 
     @Override
@@ -176,7 +170,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
 
         getDeviceLocation();
 
-        showCurrentPlace();
     }
 
     private void getLocationPermission() {
@@ -267,77 +260,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
         }
     }
 
-    private void showCurrentPlace() {
-        if (mMap == null) {
-            return;
-        }
 
-        if (mLocationPermissionGranted) {
-            // Get the likely places - that is, the businesses and other points of interest that
-            // are the best match for the device's current location.
-            @SuppressWarnings("MissingPermission") final Task<PlaceLikelihoodBufferResponse> placeResult =
-                    mPlaceDetectionClient.getCurrentPlace(null);
-            placeResult.addOnCompleteListener
-                    (new OnCompleteListener<PlaceLikelihoodBufferResponse>() {
-                        @Override
-                        public void onComplete(@NonNull Task<PlaceLikelihoodBufferResponse> task) {
-                            if (task.isSuccessful() && task.getResult() != null) {
-                                PlaceLikelihoodBufferResponse likelyPlaces = task.getResult();
 
-                                // Set the count, handling cases where less than 5 entries are returned.
-                                int count;
-                                if (likelyPlaces.getCount() < M_MAX_ENTRIES) {
-                                    count = likelyPlaces.getCount();
-                                } else {
-                                    count = M_MAX_ENTRIES;
-                                }
-
-                                int i = 0;
-                                mLikelyPlaceNames = new String[count];
-                                mLikelyPlaceAddresses = new String[count];
-                                mLikelyPlaceAttributions = new String[count];
-                                mLikelyPlaceLatLngs = new LatLng[count];
-
-                                for (PlaceLikelihood placeLikelihood : likelyPlaces) {
-                                    // Build a list of likely places to show the user.
-                                    mLikelyPlaceNames[i] = (String) placeLikelihood.getPlace().getName();
-                                    mLikelyPlaceAddresses[i] = (String) placeLikelihood.getPlace()
-                                            .getAddress();
-                                    mLikelyPlaceAttributions[i] = (String) placeLikelihood.getPlace()
-                                            .getAttributions();
-                                    mLikelyPlaceLatLngs[i] = placeLikelihood.getPlace().getLatLng();
-
-                                    i++;
-                                    if (i > (count - 1)) {
-                                        break;
-                                    }
-                                }
-
-                                // Release the place likelihood buffer, to avoid memory leaks.
-                                likelyPlaces.release();
-
-                                // Show a dialog offering the user the list of likely places, and add a
-                                // marker at the selected place.
-
-                            } else {
-                                Log.e(TAG, "Exception: %s", task.getException());
-                            }
-                        }
-                    });
-        } else {
-            // The user has not granted permission.
-            Log.i(TAG, "The user did not grant location permission.");
-
-            // Add a default marker, because the user hasn't selected a place.
-            mMap.addMarker(new MarkerOptions()
-                    .title("test")
-                    .position(mDefaultLocation)
-                    .snippet("test2"));
-
-            // Prompt the user for permission.
-            getLocationPermission();
-        }
-    }
 
 
     // -------------------
@@ -391,9 +315,9 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
                             .position(new LatLng(listRestaurant.get(i).getGeometry().getLocation().getLat(),
                                     listRestaurant.get(i).getGeometry().getLocation().getLng()))
                             .title(listRestaurant.get(i).getName())
-                    .icon(bitmapDescriptorFromVector(getActivity(),R.drawable.restaurant_marker_orange)));
+                            .icon(bitmapDescriptorFromVector(getActivity(), R.drawable.restaurant_marker_orange)));
 
-                    this.changeMarker(listRestaurant.get(i).getPlaceId(),marker);
+                    this.changeMarker(listRestaurant.get(i).getPlaceId(), marker);
                     // Store in HashMap for Marker id for clickHandler
 
                     this.markerMap.put(marker.getId(), listRestaurant.get(i));
@@ -414,20 +338,20 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
 
                 Calendar calendar = Calendar.getInstance();
                 int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
-                int j=0;
-                for(int i=0;i<querySnapshot.size();i++){
+                int j = 0;
+                for (int i = 0; i < querySnapshot.size(); i++) {
 
-                    if(querySnapshot.getDocuments().get(i).get("date").toString().equals(Integer.toString(dayOfYear))){
-                        if(!querySnapshot.getDocuments().get(i).get("uid").equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
-                            j=j+1;
+                    if (querySnapshot.getDocuments().get(i).get("date").toString().equals(Integer.toString(dayOfYear))) {
+                        if (!querySnapshot.getDocuments().get(i).get("uid").equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                            j = j + 1;
                         }
 
                     }
                 }
 
-               if(j>0 ){
-                   marker.setIcon(bitmapDescriptorFromVector(getActivity(),R.drawable.restaurant_marker_green));
-               }
+                if (j > 0) {
+                    marker.setIcon(bitmapDescriptorFromVector(getActivity(), R.drawable.restaurant_marker_green));
+                }
 
 
             }
@@ -441,19 +365,19 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
 
         Result result = this.markerMap.get(marker.getId());
         String photo;
-        if(result.getPhotos() != null){
-            if(result.getPhotos().get(0).getPhotoReference() != null){
+        if (result.getPhotos() != null) {
+            if (result.getPhotos().get(0).getPhotoReference() != null) {
                 photo = result.getPhotos().get(0).getPhotoReference();
-            }else {
-                photo =null;
+            } else {
+                photo = null;
             }
-        }else{
-            photo=null;
+        } else {
+            photo = null;
         }
 
         //Toast.makeText(getActivity(),photo, Toast.LENGTH_LONG).show();
         Intent restaurantDetails = new Intent(MapViewFragment.this.getActivity(), RestaurantDetailsActivity.class);
-        restaurantDetails.putExtra("restaurant",result.getPlaceId());
+        restaurantDetails.putExtra("restaurant", result.getPlaceId());
         restaurantDetails.putExtra("photo", photo);
         startActivity(restaurantDetails);
 
@@ -470,6 +394,19 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,View
     }
 
 
+    public void updateAutocomplete(Double latitude, Double longitude) {
+        mMap.clear();
+        markerMap.clear();
+        this.listRestaurant.clear();
 
+        mLastKnownLocation.setLatitude(latitude);
+        mLastKnownLocation.setLongitude(longitude);
+
+        this.mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), DEFAULT_ZOOM));
+        executeHttpRequestWithRetrofit(Double.toString(latitude) + "," + Double.toString(longitude));
+
+
+
+    }
 
 }
