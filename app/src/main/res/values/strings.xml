@@ -1,9 +1,17 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Go4Lunch</string>
 
     <!-- Used in NavigationDrawer -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- FACEBOOK PURPOSE -->
+    <string name="facebook_application_id" translatable="false">397503044424687</string>
+    <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb397503044424687</string>
+
+    <!-- Twitter PURPOSE -->
+    <string name="twitter_consumer_key" translatable="false">KZlQgcHqyssb2cFNwI9Wclri7</string>
+    <string name="twitter_consumer_secret" translatable="false">34YXwUOWHAFXiFlUOykYVvhCszphRyawBWXviqPS15RZBO3zfb</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

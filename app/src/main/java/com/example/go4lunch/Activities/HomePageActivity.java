@@ -297,7 +297,9 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
             }
 
             //Get email & username from Firebase
-            String email = TextUtils.isEmpty(this.getCurrentUser().getEmail()) ? getResources().getString(R.string.email_not_found) : this.getCurrentUser().getEmail();
+            String email = TextUtils.isEmpty(this.getCurrentUser().getEmail()) ? "" : this.getCurrentUser().getEmail();
+
+
             String username = TextUtils.isEmpty(this.getCurrentUser().getDisplayName()) ? getResources().getString(R.string.no_name_found) : this.getCurrentUser().getDisplayName();
 
             this.name.setText(username);

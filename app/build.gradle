@@ -16,6 +16,10 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -70,12 +74,21 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.3.1'
 
-    implementation 'com.google.firebase:firebase-core:16.0.8'
+    implementation 'com.google.firebase:firebase-core:16.0.9'
+
+    implementation 'com.google.firebase:firebase-auth:17.0.0'
 
     // FirebaseUI
     implementation 'com.firebaseui:firebase-ui-auth:4.3.2'
 
     implementation 'com.firebaseui:firebase-ui-firestore:4.3.2'
+
+    //facebook
+    //implementation 'com.facebook.android:facebook-android-sdk:4.42.0'
+    implementation 'com.facebook.android:facebook-login:4.42.0'
+
+
+    implementation 'com.twitter.sdk.android:twitter-core:3.3.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
