@@ -64,6 +64,9 @@ public class ResultDetails {
     @SerializedName("website")
     @Expose
     private String website;
+    @SerializedName("opening_hours")
+    @Expose
+    private OpeningHoursDetails openingHours;
 
     public List<AddressComponent> getAddressComponents() {
         return addressComponents;
@@ -217,4 +220,11 @@ public class ResultDetails {
         this.website = website;
     }
 
+    public OpeningHoursDetails getOpeningHours() {
+        return openingHours;
+    }
+
+    public void setOpeningHours(OpeningHoursDetails openingHours) {
+        this.openingHours = openingHours;
+    }
 }

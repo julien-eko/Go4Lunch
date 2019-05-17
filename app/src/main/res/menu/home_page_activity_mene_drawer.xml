@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:title="">
-        <menu>
             <group android:checkableBehavior="single">
                 <item
                     android:id="@+id/home_page_menu_your_lunch"
-                    android:title="YOUR LUNCH" />
+                    android:icon="@drawable/baseline_restaurant_menu_white_24"
+                    android:title="@string/your_lunch" />
                 <item
                     android:id="@+id/home_page_menu_settings"
-                    android:title="SETTINGS" />
+                    android:icon="@drawable/baseline_settings_white_24"
+                    android:title="@string/settings" />
                 <item
                     android:id="@+id/home_page_menu_logout"
-                    android:title="LOGOUT" />
+                    android:icon="@drawable/baseline_settings_power_white_24"
+                    android:title="@string/logout" />
             </group>
-        </menu>
-    </item>
 
 </menu>

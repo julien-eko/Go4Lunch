@@ -53,6 +53,7 @@ public class Result {
     @Expose
     private String vicinity;
 
+
     public Geometry getGeometry() {
         return geometry;
     }

@@ -27,4 +27,10 @@
     <string name="email_not_found">email not found</string>
     <string name="no_name_found">no name found</string>
     <string name="is_joining">\t is joining!</string>
+    <string name="sign_in_with_facebook">Sign in with Facebook</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="sign_in_with_twitter">Sign in with Twitter</string>
+    <string name="your_lunch">YOUR LUNCH</string>
+    <string name="settings">SETTINGS</string>
+    <string name="logout">LOGOUT</string>
 </resources>

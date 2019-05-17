@@ -84,6 +84,9 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
+        android:background="@color/colorPrimarylight"
+        app:itemTextColor="@android:color/white"
+        app:itemIconTint="@android:color/white"
         app:menu="@menu/home_page_activity_mene_drawer"/>
 
 </android.support.v4.widget.DrawerLayout>

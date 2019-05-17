@@ -4,12 +4,19 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
+import android.util.Log;
 
 import com.example.go4lunch.Models.Details.Details;
 import com.example.go4lunch.Models.Search.NearbySearch;
 import com.example.go4lunch.Models.Search.Result;
+import com.example.go4lunch.R;
+import com.example.go4lunch.Utils.Firestore.UserHelper;
 import com.example.go4lunch.Utils.PlaceStream;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.Calendar;
 import java.util.List;
 
 import io.reactivex.disposables.Disposable;
@@ -20,6 +27,7 @@ public class ListRestaurant {
     private static Disposable disposable;
     private  static String phone;
     private static Context mContext;
+    private static int workmate;
 
     public static void ListNearbySearch(List<Restaurant> listRestaurant, NearbySearch nearbySearch,double longitude,double latitude){
         for(Result result : nearbySearch.getResults()){
@@ -49,6 +57,7 @@ public class ListRestaurant {
                 restaurant.setSchedule("no information");
             }
 
+            //executeHttpRequestWithRetrofit(result.getPlaceId(),restaurant);
             //set number of stars (0..3)
             if(result.getRating()!=null){
                 Double rating =result.getRating();
@@ -68,8 +77,9 @@ public class ListRestaurant {
             }else{
                 restaurant.setImage(null);
             }
-
-
+            workmateNumber(result.getPlaceId(),restaurant);
+            //Log.i("workmate", Integer.toString(workmate));
+            //restaurant.setWorksmates(workmate);
             //executeHttpRequestWithRetrofit(result.getPlaceId());
 
 
@@ -78,11 +88,11 @@ public class ListRestaurant {
         }
     }
 
-    private static void executeHttpRequestWithRetrofit(String placeId) {
+    private static void executeHttpRequestWithRetrofit(String placeId,Restaurant restaurant) {
         disposable = PlaceStream.streamDetails(placeId).subscribeWith(new DisposableObserver<Details>() {
             @Override
             public void onNext(Details details) {
-                update(details);
+                update(details,restaurant);
             }
 
             @Override
@@ -99,8 +109,36 @@ public class ListRestaurant {
     }
 
 
-    public static void update(Details details){
-        phone=details.getResult().getFormattedPhoneNumber();
+    public static void update(Details details,Restaurant restaurant){
+
+        Calendar calendar = Calendar.getInstance();
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)-2;
+        String hour = Integer.toString(calendar.get(Calendar.HOUR_OF_DAY));
+        String minute = Integer.toString(calendar.get(Calendar.MINUTE));
+
+        if (minute.length()==1){
+            minute = "0" + minute;
+        }
+        Integer time = Integer.parseInt(hour + minute);
+
+        Calendar.getInstance().getTime();
+        if (details.getResult().getOpeningHours() != null) {
+            if(details.getResult().getOpeningHours().getOpenNow()){
+                if(details.getResult().getOpeningHours().getWeekdayText().size() !=0){
+                for (int i=0;i<dayOfWeek;i++){
+                    if(Integer.parseInt(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime()) > time){
+                        restaurant.setSchedule("open until " + details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime());
+                    }
+                }}else {
+                    restaurant.setSchedule("open");
+                }
+            }else{
+                restaurant.setSchedule("closed");
+            }
+        }else{
+            restaurant.setSchedule("no information");
+        }
+
 
     }
 
@@ -117,5 +155,32 @@ public class ListRestaurant {
         else
             return 3;
 
+    }
+
+    private static void workmateNumber(String restaurantId,Restaurant restaurant){
+        UserHelper.getUsersInterestedByRestaurant(restaurantId).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot querySnapshot) {
+
+                Calendar calendar = Calendar.getInstance();
+                int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
+                workmate = 0;
+                for (int i = 0; i < querySnapshot.size(); i++) {
+
+                    if (querySnapshot.getDocuments().get(i).get("date").toString().equals(Integer.toString(dayOfYear))) {
+                        if (!querySnapshot.getDocuments().get(i).get("uid").equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                            workmate = workmate +1;
+
+                        }
+
+                    }
+                }
+
+                restaurant.setWorksmates(workmate);
+                Log.i("workmate1", restaurant.getNameRestaurant());
+                Log.i("workmate1", Integer.toString(restaurant.getWorksmates()));
+
+            }
+        });
     }
 }

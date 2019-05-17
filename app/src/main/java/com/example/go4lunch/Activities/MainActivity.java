@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.media.Image;
 import android.support.annotation.BinderThread;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -14,6 +15,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import butterknife.BindView;
@@ -25,7 +27,6 @@ import com.example.go4lunch.Models.Firestore.User;
 import com.example.go4lunch.R;
 import com.example.go4lunch.Utils.Firestore.UserHelper;
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.AuthUI.IdpConfig.FacebookBuilder;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -41,11 +42,16 @@ import butterknife.OnClick;
 public class MainActivity extends BaseActivity {
 
 
-    @BindView(R.id.activity_main_layout)
-    LinearLayout layout;
+    //@BindView(R.id.activity_main_layout)
+    //LinearLayout layout;
     @BindView(R.id.activity_main_google_button)
     Button googleButton;
     private static final int RC_SIGN_IN = 123;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     public int getFragmentLayout() { return R.layout.activity_main; }
@@ -58,6 +64,8 @@ public class MainActivity extends BaseActivity {
         this.updateUIWhenResuming();
     }
 */
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -132,7 +140,7 @@ public class MainActivity extends BaseActivity {
 
     // 2 - Show Snack Bar with a message
     private void showSnackBar(LinearLayout Layout, String message){
-        Snackbar.make(layout, message, Snackbar.LENGTH_SHORT).show();
+        //Snackbar.make(layout, message, Snackbar.LENGTH_SHORT).show();
     }
 
 // --------------------
@@ -153,12 +161,11 @@ public class MainActivity extends BaseActivity {
 
     private void startSignInFacebook(){
        // this.printHashKey(this);
-
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
                         .setAvailableProviders(
-                                Arrays.asList(new FacebookBuilder().build()))
+                                Arrays.asList(new AuthUI.IdpConfig.FacebookBuilder().build()))
                         .setIsSmartLockEnabled(false, true)
                         .build(),
                 RC_SIGN_IN);
@@ -190,6 +197,19 @@ public class MainActivity extends BaseActivity {
                         .build(),
                 RC_SIGN_IN);
     }
+
+    private void startSignInActivity(){
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(
+                                Arrays.asList(new AuthUI.IdpConfig.GoogleBuilder().build(),
+                                        new AuthUI.IdpConfig.FacebookBuilder().build(),
+                                        new AuthUI.IdpConfig.TwitterBuilder().build()))
+                        .setIsSmartLockEnabled(false, true)
+                        .build(),
+                RC_SIGN_IN);
+    }
     // --------------------
     // UTILS
     // --------------------
@@ -204,15 +224,15 @@ public class MainActivity extends BaseActivity {
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) { // SUCCESS
                 this.createUserInFirestore();
-                showSnackBar(this.layout, "conection ok");
+                //showSnackBar(this.layout, "conection ok");
                 this.startActivity();
             } else { // ERRORS
                 if (response == null) {
-                    showSnackBar(this.layout, "error");
+                  //  showSnackBar(this.layout, "error");
                 } else if (response.getError().getErrorCode() == ErrorCodes.NO_NETWORK) {
-                    showSnackBar(this.layout, "no intenet");
+                    //showSnackBar(this.layout, "no intenet");
                 } else if (response.getError().getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
-                    showSnackBar(this.layout, "unknow error");
+                    //showSnackBar(this.layout, "unknow error");
                 }
             }
         }
@@ -220,7 +240,7 @@ public class MainActivity extends BaseActivity {
 
     // 2 - Update UI when activity is resuming
     private void updateUIWhenResuming(){
-        this.googleButton.setText(this.isCurrentUserLogged() ? "Afficher map" : "CONNEXION");
+       // this.googleButton.setText(this.isCurrentUserLogged() ? "Afficher map" : "CONNEXION");
     }
 
     public void startActivity(){
