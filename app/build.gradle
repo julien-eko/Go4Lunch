@@ -28,11 +28,17 @@ android {
             //place api
             buildConfigField 'String', "ApiKey", localProperties['apiKey']
             resValue 'string', "api_key", localProperties['apiKey']
+
+            buildConfigField 'String', "twitter_Key", localProperties['twitterKey']
+            resValue 'string', "twitter_Key", localProperties['twitterKey']
         }
         debug {
             // Place Api
             buildConfigField 'String', "ApiKey", localProperties['apiKey']
             resValue 'string', "api_key", localProperties['apiKey']
+
+            buildConfigField 'String', "twitter_Key", localProperties['twitterKey']
+            resValue 'string', "twitter_Key", localProperties['twitterKey']
         }
     }
 }
