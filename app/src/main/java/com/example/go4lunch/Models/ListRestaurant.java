@@ -47,6 +47,7 @@ public class ListRestaurant {
             restaurant.setDistance(Integer.toString((int)distance[0])+"m");
 
             //open or close
+            /*
             if (result.getOpeningHours() != null) {
                 if (result.getOpeningHours().getOpenNow()){
                     restaurant.setSchedule("open");
@@ -56,8 +57,8 @@ public class ListRestaurant {
             }else{
                 restaurant.setSchedule("no information");
             }
-
-            //executeHttpRequestWithRetrofit(result.getPlaceId(),restaurant);
+*/
+            executeHttpRequestWithRetrofit(result.getPlaceId(),restaurant,result);
             //set number of stars (0..3)
             if(result.getRating()!=null){
                 Double rating =result.getRating();
@@ -88,11 +89,11 @@ public class ListRestaurant {
         }
     }
 
-    private static void executeHttpRequestWithRetrofit(String placeId,Restaurant restaurant) {
+    private static void executeHttpRequestWithRetrofit(String placeId,Restaurant restaurant,Result result) {
         disposable = PlaceStream.streamDetails(placeId).subscribeWith(new DisposableObserver<Details>() {
             @Override
             public void onNext(Details details) {
-                update(details,restaurant);
+                update(details,restaurant,result);
             }
 
             @Override
@@ -109,7 +110,7 @@ public class ListRestaurant {
     }
 
 
-    public static void update(Details details,Restaurant restaurant){
+    public static void update(Details details,Restaurant restaurant,Result result){
 
         Calendar calendar = Calendar.getInstance();
         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)-2;
@@ -124,24 +125,54 @@ public class ListRestaurant {
         Calendar.getInstance().getTime();
         if (details.getResult().getOpeningHours() != null) {
             if(details.getResult().getOpeningHours().getOpenNow()){
-                if(details.getResult().getOpeningHours().getWeekdayText().size() !=0){
-                for (int i=0;i<dayOfWeek;i++){
+                if(details.getResult().getOpeningHours().getPeriods().size() !=0){
+                for (int i=0;i<=dayOfWeek;i++){
                     if(Integer.parseInt(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime()) > time){
-                        restaurant.setSchedule("open until " + details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime());
+                        if((Integer.parseInt(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime()) - time  ) < 30  ){
+                            restaurant.setSchedule("Closing Soon");
+                        }else{
+                            restaurant.setSchedule("Open until " + convertDate(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime()));
+                        }
+
                     }
                 }}else {
-                    restaurant.setSchedule("open");
+                    restaurant.setSchedule("Open");
                 }
             }else{
-                restaurant.setSchedule("closed");
+                restaurant.setSchedule("Close");
             }
         }else{
-            restaurant.setSchedule("no information");
+            if (result.getOpeningHours() != null) {
+                if (result.getOpeningHours().getOpenNow()){
+                    restaurant.setSchedule("Open");
+                } else {
+                    restaurant.setSchedule("Close");
+                }
+            }else{
+                restaurant.setSchedule("No information");
+            }
         }
 
 
     }
 
+    public static String convertDate(String date){
+        int hour = Integer.parseInt(date.substring(0,2));
+        String minute =date.substring(2);
+
+        if(hour > 12){
+            return (hour -12) + "." + minute + "pm";
+        }
+        else if (hour == 12){
+            return "12" + "." + minute + "pm";
+        }else if (hour == 0){
+            return "12" + "." + minute + "am";
+        }else{
+            return hour + "." + minute + "am";
+        }
+
+
+    }
 
     public static Integer rating (double rating){
         rating = (rating/5)*3;

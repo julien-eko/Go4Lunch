@@ -171,9 +171,10 @@ public class ListViewFragment extends Fragment {
     public void myLocation() {
         LocationManager lm = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
         @SuppressLint("MissingPermission")
-        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        Location location = MapViewFragment.getmLastKnownLocation();
         longitude = location.getLongitude();
         latitude = location.getLatitude();
+
     }
 
 }

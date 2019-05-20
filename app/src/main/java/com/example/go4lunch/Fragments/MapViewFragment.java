@@ -91,9 +91,11 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Vie
     private boolean mLocationPermissionGranted;
 
 
+
+
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
-    private Location mLastKnownLocation;
+    private static Location mLastKnownLocation;
 
     // Used for selecting the current place.
     //private static final int M_MAX_ENTRIES = 5;
@@ -409,4 +411,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Vie
 
     }
 
+    public static Location getmLastKnownLocation() {
+        return mLastKnownLocation;
+    }
 }
