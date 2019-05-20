@@ -1,13 +1,20 @@
 package com.example.go4lunch.Activities;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -42,6 +49,7 @@ import io.reactivex.observers.DisposableObserver;
 
 public class RestaurantDetailsActivity extends BaseActivity {
 
+    private static final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 1;
     @BindView(R.id.activity_restaurant_adress)
     TextView adress;
     @BindView(R.id.activity_restaurant_item_stars_1)
@@ -58,6 +66,8 @@ public class RestaurantDetailsActivity extends BaseActivity {
     FloatingActionButton floatingActionButton;
     @BindView(R.id.activity_restaurant_like_button)
     Button likeButton;
+    @BindView(R.id.activity_restaurant_website_button)
+    Button webButton;
     @BindView(R.id.activity_restaurant_details_recycler_view)
     RecyclerView recyclerView;
 
@@ -69,6 +79,8 @@ public class RestaurantDetailsActivity extends BaseActivity {
     private String photo;
     private String api_key;
     private Boolean like;
+    private String webSite;
+    private String phoneNumber;
 
     @Override
     public int getFragmentLayout() {
@@ -132,6 +144,47 @@ public class RestaurantDetailsActivity extends BaseActivity {
             floatingActionButton.setActivated(false);
         }
     }
+
+    @OnClick(R.id.activity_restaurant_website_button)
+    public void OnClickWebButton(){
+
+        if(webSite == null){
+            Toast.makeText(this,"no website for this restaurant",Toast.LENGTH_LONG).show();
+        }else{
+            Intent webView = new Intent(RestaurantDetailsActivity.this, WebViewActivity.class);
+           // Log.e("site", webSite);
+            webView.putExtra("url", webSite);
+            startActivity(webView);
+        }
+
+    }
+
+    @OnClick(R.id.activity_restaurant_call_button)
+    public void onCLickCallButton(){
+        Intent callIntent = new Intent(Intent.ACTION_CALL);
+        callIntent.setData(Uri.parse("tel:" + phoneNumber));
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CALL_PHONE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CALL_PHONE},
+                    MY_PERMISSIONS_REQUEST_CALL_PHONE);
+
+            // MY_PERMISSIONS_REQUEST_CALL_PHONE is an
+            // app-defined int constant. The callback method gets the
+            // result of the request.
+        } else {
+            //You already have permission
+            try {
+                startActivity(callIntent);
+            } catch(SecurityException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     private void configureRestaurant() {
 
@@ -208,6 +261,12 @@ public class RestaurantDetailsActivity extends BaseActivity {
         disposable = PlaceStream.streamDetails(restautantId).subscribeWith(new DisposableObserver<Details>() {
             @Override
             public void onNext(Details details) {
+                if(details.getResult().getWebsite() !=null){
+                    webSite = details.getResult().getWebsite();
+                }
+                if(details.getResult().getFormattedPhoneNumber()!= null){
+                    phoneNumber=details.getResult().getFormattedPhoneNumber();
+                }
                 update(details);
             }
 

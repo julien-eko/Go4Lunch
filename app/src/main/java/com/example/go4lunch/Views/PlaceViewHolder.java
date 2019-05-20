@@ -1,5 +1,7 @@
 package com.example.go4lunch.Views;
 
+import android.annotation.SuppressLint;
+import android.support.v4.graphics.drawable.IconCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -49,11 +51,13 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
     }
 
     //update view
+    @SuppressLint("ResourceAsColor")
     public void updateWithTimesUser(Restaurant restaurant, RequestManager glide) {
 
 
         this.name.setText(restaurant.getNameRestaurant());
         this.address.setText(restaurant.getAddress());
+
         this.openHours.setText(restaurant.getSchedule());
         this.distance.setText(restaurant.getDistance());
         workmateNumber(restaurant.getId(),workmate);

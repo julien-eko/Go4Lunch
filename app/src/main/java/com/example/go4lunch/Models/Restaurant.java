@@ -3,7 +3,7 @@ package com.example.go4lunch.Models;
 public class Restaurant {
 
     private String nameRestaurant;
-    private String  distance;
+    private String distance;
     private String image;
     private String type;
     private String address;
@@ -11,6 +11,9 @@ public class Restaurant {
     private String schedule;
     private Integer stars;
     private String id;
+
+
+    private String webSite;
 
     public Restaurant() {
 
@@ -29,12 +32,20 @@ public class Restaurant {
         return distance;
     }
 
-    public void setDistance(String  distance) {
+    public void setDistance(String distance) {
         this.distance = distance;
     }
 
     public String getImage() {
         return image;
+    }
+
+    public String getWebSite() {
+        return webSite;
+    }
+
+    public void setWebSite(String webSite) {
+        this.webSite = webSite;
     }
 
     public void setImage(String image) {
