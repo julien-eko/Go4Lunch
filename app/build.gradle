@@ -84,6 +84,9 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-auth:17.0.0'
 
+    //Notification
+    implementation 'com.google.firebase:firebase-messaging:18.0.0'
+
     // FirebaseUI
     implementation 'com.firebaseui:firebase-ui-auth:4.3.2'
 

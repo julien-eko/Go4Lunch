@@ -201,7 +201,8 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
                 this.yourLunch();
                 break;
             case R.id.home_page_menu_settings:
-
+                Intent settingsActivity = new Intent(HomePageActivity.this, SettingsActivity.class);
+                startActivity(settingsActivity);
                 break;
             case R.id.home_page_menu_logout:
                 this.signOutUserFromFirebase();

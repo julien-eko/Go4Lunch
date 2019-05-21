@@ -327,6 +327,7 @@ public class RestaurantDetailsActivity extends BaseActivity {
                 UserHelper.updateChoiceRestaurant(restaurant, this.getCurrentUser().getUid());
                 UserHelper.updateRestaurantPicture(photo, this.getCurrentUser().getUid());
                 UserHelper.updateRestaurantName(nameRestaurant.getText().toString(), this.getCurrentUser().getUid());
+                UserHelper.updateRestaurantAdress(adress.getText().toString(),this.getCurrentUser().getUid());
 
                 Calendar calendar = Calendar.getInstance();
                 int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);

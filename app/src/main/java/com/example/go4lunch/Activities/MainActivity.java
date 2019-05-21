@@ -90,14 +90,14 @@ public class MainActivity extends BaseActivity {
                 String uid = getCurrentUser().getUid();
 
                 if (currentUser == null) {
-                    UserHelper.createUser(uid, username, urlPicture,null, null,null,0);
+                    UserHelper.createUser(uid, username, urlPicture,null, null,null,0,null);
                 }else {
                     Calendar calendar = Calendar.getInstance();
                     int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
 
                     if (dayOfYear != currentUser.getDate()) {
 
-                        UserHelper.createUser(uid, username, urlPicture, null, null,null,0);
+                        UserHelper.createUser(uid, username, urlPicture, null, null,null,0,null);
                     }
                 }
             }

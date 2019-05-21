@@ -15,7 +15,8 @@
         android:roundIcon="@drawable/logo_restaurant"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.WebViewActivity"></activity>
+        <activity android:name=".Activities.SettingsActivity"></activity>
+        <activity android:name=".Activities.WebViewActivity" />
         <activity android:name=".Activities.RestaurantDetailsActivity" />
         <activity android:name=".Activities.HomePageActivity" />
         <activity android:name=".Activities.MainActivity">
@@ -31,7 +32,10 @@
             android:value="@string/api_key" />
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+            android:value="@integer/google_play_services_version" /> <!-- NOTIFICATION SERVICE -->
+        <receiver
+            android:name=".Notifications.NotificationsAlarmReceiver"
+            android:exported="true"/>
     </application>
 
 </manifest>
