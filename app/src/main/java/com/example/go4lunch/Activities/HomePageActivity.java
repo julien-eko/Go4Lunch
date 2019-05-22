@@ -118,7 +118,7 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
         name = (TextView) hView.findViewById(R.id.home_page_activity_name);
         image = (ImageView) hView.findViewById(R.id.home_page_activity_photo);
 
-        this.configureToolBar();
+        this.configureToolBar(getResources().getString(R.string.map_list_title));
 
         this.configureDrawerLayout();
 
@@ -272,9 +272,9 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
         };
     }
 
-    private void configureToolBar() {
+    private void configureToolBar(String title) {
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Go4Lunch");
+        getSupportActionBar().setTitle(title);
     }
 
     private void configureDrawerLayout() {
@@ -316,8 +316,9 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
     // --------------
     @OnClick(R.id.home_page_activity_map_button)
     public void onClickMapView() {
-        this.configureAndShowMapViewFragment();
 
+        this.configureAndShowMapViewFragment();
+        this.configureToolBar(getResources().getString(R.string.map_list_title));
 
         mapViewButton.setTextColor(getResources().getColor(R.color.colorPrimary));
         listViewButton.setTextColor(getResources().getColor(R.color.black));
@@ -333,6 +334,7 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
     @OnClick(R.id.home_page_activity_list_view_button)
     public void onClickListView() {
+        this.configureToolBar(getResources().getString(R.string.map_list_title));
         this.configureAndShowListViewFragment();
         mapViewButton.setTextColor(getResources().getColor(R.color.black));
         listViewButton.setTextColor(getResources().getColor(R.color.colorPrimary));
@@ -347,6 +349,8 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
     @OnClick(R.id.home_page_activity_workmates_button)
     public void onClickWokmates() {
+
+        this.configureToolBar(getResources().getString(R.string.workmates_title));
         this.configureAndShowWorkmatesFragment();
         mapViewButton.setTextColor(getResources().getColor(R.color.black));
         listViewButton.setTextColor(getResources().getColor(R.color.black));

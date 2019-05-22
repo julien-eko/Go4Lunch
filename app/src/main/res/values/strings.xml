@@ -14,11 +14,11 @@
     <string name="twitter_consumer_secret" translatable="false">@string/twitter_Key</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
     <string name="workmate">Workmate</string>
     <string name="list_view">List View</string>
     <string name="map_view">Map View</string>
-    <string name="call">CALL</string>
+    <string name="call" translatable="false">CALL</string>
     <string name="like">LIKE</string>
     <string name="website">WEBSITE</string>
     <string name="unlike">Like</string>
@@ -34,4 +34,8 @@
     <string name="settings">SETTINGS</string>
     <string name="logout">LOGOUT</string>
     <string name="enable_notifications">Enable notifications</string>
+    <string name="map_list_title">I\'m Hungry!</string>
+    <string name="workmates_title">Aivailable workmates</string>
+    <string name="notification_enable">Alarm set !</string>
+    <string name="notification_desable">Alarm Canceled !</string>
 </resources>

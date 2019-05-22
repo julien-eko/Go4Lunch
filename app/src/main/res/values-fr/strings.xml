@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Go4Lunch</string>
+    <string name="email_not_found">Email non trouvé</string>
+    <string name="enable_notifications">Activer les notifications</string>
+    <string name="hasnt_decided_yet">n\'a pas encore décidé</string>
+    <string name="is_eating_at">déjeunera:</string>
+    <string name="is_joining">se joint!</string>
+    <string name="like">J\'aime</string>
+    <string name="list_view">Liste</string>
+    <string name="logout">Déconnexion</string>
+    <string name="map_list_title">J\'ai faim!</string>
+    <string name="map_view">Carte</string>
+    <string name="no_name_found">Aucun nom trouvé</string>
+    <string name="settings">Réglages</string>
+    <string name="sign_in_with_facebook">Connexion avec Facebbok</string>
+    <string name="sign_in_with_google">Connexion avec Google</string>
+    <string name="sign_in_with_twitter">Connexion avec Twitter</string>
+    <string name="unlike">J\'aime</string>
+    <string name="website">Site internet</string>
+    <string name="workmate">Collègue</string>
+    <string name="workmates_title">Collègue disponible</string>
+    <string name="your_lunch">Mon déjeuner</string>
+    <string name="navigation_drawer_close">Fermer navigation drawer</string>
+    <string name="navigation_drawer_open">Ouvrir navigation drawer</string>
+    <string name="notification_desable">Notifications activé</string>
+    <string name="notification_enable">Notification desactivé</string>
+</resources>
