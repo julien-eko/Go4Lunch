@@ -10,9 +10,12 @@ import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
 import com.example.go4lunch.BuildConfig;
+import com.example.go4lunch.Models.Details.Details;
 import com.example.go4lunch.Models.Restaurant;
+import com.example.go4lunch.Models.Search.Result;
 import com.example.go4lunch.R;
 import com.example.go4lunch.Utils.Firestore.UserHelper;
+import com.example.go4lunch.Utils.PlaceStream;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -21,6 +24,8 @@ import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
 
 public class PlaceViewHolder extends RecyclerView.ViewHolder {
 
@@ -43,6 +48,7 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.fragment_restaurant_item_workmates_number)
     TextView workmate;
     private String api_key;
+    private static Disposable disposable;
 
     public PlaceViewHolder(View itemView) {
         super(itemView);
@@ -51,14 +57,16 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
     }
 
     //update view
-    @SuppressLint("ResourceAsColor")
     public void updateWithTimesUser(Restaurant restaurant, RequestManager glide) {
 
 
         this.name.setText(restaurant.getNameRestaurant());
         this.address.setText(restaurant.getAddress());
 
-        this.openHours.setText(restaurant.getSchedule());
+        //this.openHours.setText(restaurant.getSchedule());
+        executeHttpRequestWithRetrofit(restaurant.getId(),restaurant,openHours);
+        //this.openHours.setText(restaurant.getSchedule());
+
         this.distance.setText(restaurant.getDistance());
         workmateNumber(restaurant.getId(),workmate);
 
@@ -108,5 +116,91 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
 
             }
         });
+    }
+
+
+    private static void executeHttpRequestWithRetrofit(String placeId, Restaurant restaurant,TextView openHours) {
+        disposable = PlaceStream.streamDetails(placeId).subscribeWith(new DisposableObserver<Details>() {
+            @Override
+            public void onNext(Details details) {
+
+                update(details, restaurant);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+
+            }
+
+            @Override
+            public void onComplete() {
+                openHours.setText(restaurant.getSchedule());
+            }
+        });
+    }
+
+
+    public static void update(Details details, Restaurant restaurant) {
+
+        Calendar calendar = Calendar.getInstance();
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        String hour = Integer.toString(calendar.get(Calendar.HOUR_OF_DAY ));
+        String minute = Integer.toString(calendar.get(Calendar.MINUTE));
+
+        if (minute.length() == 1) {
+            minute = "0" + minute;
+        }
+        Integer time = Integer.parseInt(hour + minute);
+
+        Calendar.getInstance().getTime();
+        if (details.getResult().getOpeningHours() != null) {
+            if (details.getResult().getOpeningHours().getOpenNow()) {
+                if (details.getResult().getOpeningHours().getPeriods().size() != 0) {
+                    for (int i = 0; i <= dayOfWeek; i++) {
+                        if (Integer.parseInt(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime()) > time) {
+                            Integer a = (Integer.parseInt(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime())) - time;
+                            Log.e("fermeture", Integer.toString(Integer.parseInt(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime())));
+                            Log.e("heure ", Integer.toString(time));
+
+                            Log.e("soustraction", Integer.toString(a));
+                            if (((Integer.parseInt(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime())) - time) < 70) {
+                                restaurant.setSchedule("Closing Soon");
+                            } else {
+                                restaurant.setSchedule("Open until " + convertDate(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime()));
+                            }
+
+                        }
+                    }
+                } else {
+                    restaurant.setSchedule("Open");
+                }
+            } else {
+                restaurant.setSchedule("Close");
+            }
+        } else {
+
+                restaurant.setSchedule("No information");
+
+        }
+
+
+    }
+
+    public static String convertDate(String date) {
+        int hour = Integer.parseInt(date.substring(0, 2));
+        String minute = date.substring(2);
+
+        if (hour > 12) {
+            return (hour - 12) + "." + minute + "pm";
+        } else if (hour == 12) {
+            return "12" + "." + minute + "pm";
+        } else if (hour == 0) {
+            return "12" + "." + minute + "am";
+        } else {
+            return hour + "." + minute + "am";
+        }
+
+
     }
 }

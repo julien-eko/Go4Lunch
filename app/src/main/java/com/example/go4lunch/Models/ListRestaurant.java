@@ -31,7 +31,12 @@ public class ListRestaurant {
 
     public static void ListNearbySearch(List<Restaurant> listRestaurant, NearbySearch nearbySearch, double longitude, double latitude) {
         for (Result result : nearbySearch.getResults()) {
+
             Restaurant restaurant = new Restaurant();
+
+
+            //executeHttpRequestWithRetrofit(result.getPlaceId(), restaurant, result);
+
 
             restaurant.setId(result.getPlaceId());
 
@@ -58,7 +63,7 @@ public class ListRestaurant {
                 restaurant.setSchedule("no information");
             }
 */
-            executeHttpRequestWithRetrofit(result.getPlaceId(), restaurant, result);
+
             //set number of stars (0..3)
             if (result.getRating() != null) {
                 Double rating = result.getRating();
@@ -77,7 +82,7 @@ public class ListRestaurant {
             } else {
                 restaurant.setImage(null);
             }
-            workmateNumber(result.getPlaceId(), restaurant);
+            //workmateNumber(result.getPlaceId(), restaurant);
             //Log.i("workmate", Integer.toString(workmate));
             //restaurant.setWorksmates(workmate);
             //executeHttpRequestWithRetrofit(result.getPlaceId());
@@ -87,96 +92,7 @@ public class ListRestaurant {
         }
     }
 
-    private static void executeHttpRequestWithRetrofit(String placeId, Restaurant restaurant, Result result) {
-        disposable = PlaceStream.streamDetails(placeId).subscribeWith(new DisposableObserver<Details>() {
-            @Override
-            public void onNext(Details details) {
 
-                update(details, restaurant, result);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-    }
-
-
-    public static void update(Details details, Restaurant restaurant, Result result) {
-
-        Calendar calendar = Calendar.getInstance();
-        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 2;
-        String hour = Integer.toString(calendar.get(Calendar.HOUR_OF_DAY )+2);
-        String minute = Integer.toString(calendar.get(Calendar.MINUTE));
-
-        if (minute.length() == 1) {
-            minute = "0" + minute;
-        }
-        Integer time = Integer.parseInt(hour + minute);
-
-        Calendar.getInstance().getTime();
-        if (details.getResult().getOpeningHours() != null) {
-            if (details.getResult().getOpeningHours().getOpenNow()) {
-                if (details.getResult().getOpeningHours().getPeriods().size() != 0) {
-                    for (int i = 0; i <= dayOfWeek; i++) {
-                        if (Integer.parseInt(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime()) > time) {
-                            Integer a = (Integer.parseInt(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime())) - time;
-                            Log.e("fermeture", Integer.toString(Integer.parseInt(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime())));
-                            Log.e("heure ", Integer.toString(time));
-
-                            Log.e("soustraction", Integer.toString(a));
-                            if (((Integer.parseInt(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime())) - time) < 70) {
-                                restaurant.setSchedule("Closing Soon");
-                            } else {
-                                restaurant.setSchedule("Open until " + convertDate(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime()));
-                            }
-
-                        }
-                    }
-                } else {
-                    restaurant.setSchedule("Open");
-                }
-            } else {
-                restaurant.setSchedule("Close");
-            }
-        } else {
-            if (result.getOpeningHours() != null) {
-                if (result.getOpeningHours().getOpenNow()) {
-                    restaurant.setSchedule("Open");
-                } else {
-                    restaurant.setSchedule("Close");
-                }
-            } else {
-                restaurant.setSchedule("No information");
-            }
-        }
-
-
-    }
-
-    public static String convertDate(String date) {
-        int hour = Integer.parseInt(date.substring(0, 2));
-        String minute = date.substring(2);
-
-        if (hour > 12) {
-            return (hour - 12) + "." + minute + "pm";
-        } else if (hour == 12) {
-            return "12" + "." + minute + "pm";
-        } else if (hour == 0) {
-            return "12" + "." + minute + "am";
-        } else {
-            return hour + "." + minute + "am";
-        }
-
-
-    }
 
     public static Integer rating(double rating) {
         rating = (rating / 5) * 3;
@@ -192,30 +108,5 @@ public class ListRestaurant {
 
     }
 
-    private static void workmateNumber(String restaurantId, Restaurant restaurant) {
-        UserHelper.getUsersInterestedByRestaurant(restaurantId).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot querySnapshot) {
 
-                Calendar calendar = Calendar.getInstance();
-                int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
-                workmate = 0;
-                for (int i = 0; i < querySnapshot.size(); i++) {
-
-                    if (querySnapshot.getDocuments().get(i).get("date").toString().equals(Integer.toString(dayOfYear))) {
-                        if (!querySnapshot.getDocuments().get(i).get("uid").equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                            workmate = workmate + 1;
-
-                        }
-
-                    }
-                }
-
-                restaurant.setWorksmates(workmate);
-                Log.i("workmate1", restaurant.getNameRestaurant());
-                Log.i("workmate1", Integer.toString(restaurant.getWorksmates()));
-
-            }
-        });
-    }
 }
