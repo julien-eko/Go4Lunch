@@ -360,7 +360,9 @@ public class RestaurantDetailsActivity extends BaseActivity {
 
     private void configureRecyclerView ()
     {
-        this.adapter = new WorkmatesAdapter(generateOptionsForAdapter(UserHelper.getUserByRestaurantId(restautantId)),Glide.with(this),true);
+        Calendar calendar = Calendar.getInstance();
+        int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
+        this.adapter = new WorkmatesAdapter(generateOptionsForAdapter(UserHelper.getUserByRestaurantIdAndDate(restautantId,dayOfYear)),Glide.with(this),true);
         this.recyclerView.setAdapter(this.adapter);
         this.recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }

@@ -63,14 +63,14 @@ public class WorkmatesViewHolder extends RecyclerView.ViewHolder {
                     glide.load(user.getUrlPicture()).apply(RequestOptions.circleCropTransform()).into(image);
                 }
             }else{
-                if (user.getDate() == dayOfYear) {
+
                     String text = user.getUsername() + context.getResources().getString(R.string.is_joining);
                     textView.setText(text);
                     textView.setTextColor(context.getResources().getColor(R.color.black));
                     if (user.getUrlPicture() != null) {
                         glide.load(user.getUrlPicture()).apply(RequestOptions.circleCropTransform()).into(image);
                     }
-                }
+
             }
 
 

@@ -42,6 +42,9 @@ public class UserHelper {
         return UserHelper.getUsersCollection().whereEqualTo("restaurantChoiceId",restaurantChoiceId);
     }
 
+    public static Query getUserByRestaurantIdAndDate(String restaurantChoiceId,int date){
+        return UserHelper.getUsersCollection().whereEqualTo("restaurantChoiceId",restaurantChoiceId).whereEqualTo("date",date);
+    }
 
     public static Task<QuerySnapshot> getUsersInterestedByRestaurant(String restaurantId)
     {
