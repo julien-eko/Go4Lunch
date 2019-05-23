@@ -1,24 +1,14 @@
 package com.example.go4lunch.Activities;
 
 
-import android.annotation.SuppressLint;
-import android.content.ClipData;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
-import android.location.LocationManager;
-import android.media.Image;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -46,8 +36,6 @@ import com.example.go4lunch.Utils.Firestore.UserHelper;
 import com.example.go4lunch.Utils.PlaceStream;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.places.AutocompleteFilter;
-import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
@@ -59,15 +47,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.DisposableObserver;
 
 public class HomePageActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -89,10 +73,7 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
     private TextView name;
     private ImageView image;
     private static final int SIGN_OUT_TASK = 10;
-    private Disposable disposable;
     private int AUTOCOMPLETE_REQUEST_CODE = 1;
-    private double longitude;
-    private double latitude;
     private List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG);
     private MapViewFragment mapViewFragment;
     private ListViewFragment listViewFragment;
@@ -409,36 +390,7 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
     }
 
-    private void executeHttpRequestWithRetrofit() {
 
-
-
-        this.disposable = PlaceStream.streamNearbySearch(Double.toString(latitude) + ","+Double.toString(longitude)).subscribeWith(new DisposableObserver<NearbySearch>() {
-            @Override
-            public void onNext(NearbySearch nearbySearch) {
-                updateUI(nearbySearch);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-    }
-
-    public void myLocation() {
-        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        @SuppressLint("MissingPermission")
-        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        longitude = location.getLongitude();
-        latitude = location.getLatitude();
-    }
 
     private void updateUI(NearbySearch nearbySearch){
 

@@ -11,11 +11,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -99,8 +95,6 @@ public class SettingsActivity extends BaseActivity implements CompoundButton.OnC
     //Configuring the AlarmManager and save inforpation in intent for notification message
     private void configureAlarmManager() {
         Intent alarmIntent = new Intent(SettingsActivity.this, NotificationsAlarmReceiver.class);
-        //alarmIntent.putExtra("queryShearch", editText.getText().toString());
-        //alarmIntent.putExtra("newsDesk", newsDesk());
 
         pendingIntent = PendingIntent.getBroadcast(SettingsActivity.this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         // Log.e("key 1", "alarm manager");
@@ -144,9 +138,9 @@ public class SettingsActivity extends BaseActivity implements CompoundButton.OnC
     private void startAlarm() {
         configureAlarmManager();
         AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        //manager.setRepeating(AlarmManager.RTC_WAKEUP, times(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, times(), AlarmManager.INTERVAL_DAY, pendingIntent);
 
-        manager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, 10, pendingIntent);
+        //manager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, 10, pendingIntent);
         Toast.makeText(this, getResources().getString(R.string.notification_enable), Toast.LENGTH_SHORT).show();
 
     }
@@ -175,7 +169,8 @@ public class SettingsActivity extends BaseActivity implements CompoundButton.OnC
 
     private void deleteUserFromFirebase(){
         if (getCurrentUser() != null) {
-
+            SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+            preferences.edit().putBoolean(this.getCurrentUser().getUid(),false);
             UserHelper.deleteUser(this.getCurrentUser().getUid()).addOnFailureListener(this.onFailureListener());
 
             AuthUI.getInstance()

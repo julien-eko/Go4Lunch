@@ -23,8 +23,8 @@
     <string name="your_lunch">Mon déjeuner</string>
     <string name="navigation_drawer_close">Fermer navigation drawer</string>
     <string name="navigation_drawer_open">Ouvrir navigation drawer</string>
-    <string name="notification_desable">Notifications activé</string>
-    <string name="notification_enable">Notification desactivé</string>
+    <string name="notification_desable">Notifications desactivé</string>
+    <string name="notification_enable">Notification activé</string>
     <string name="delete_your_account">Supprimer votre compte</string>
     <string name="choice_delete_account">Êtes-vous sûr de vouloir supprimer votre compte?</string>
     <string name="popup_message_choice_no">Non</string>
@@ -34,4 +34,8 @@
     <string name="no_information">Pas d\'information</string>
     <string name="open">Ouvert</string>
     <string name="open_until">"Ouvert jusqu'a "</string>
+    <string name="no_workmates">pas de collègues</string>
+    <string name="notification_your_lunch">"Mon déjeuner: "</string>
+    <string name="with_workmates">avec collègues :</string>
+    <string name="adress">. Adresse</string>
 </resources>

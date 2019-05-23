@@ -102,8 +102,13 @@ public class NotificationsAlarmReceiver extends BroadcastReceiver {
 
     private void sendNotification(){
         if(isLunch){
-            String title = "Your lunch: " +restaurantName;
-            String message = "with workmate :" + listWorkmates +". Adress: " +restaurantAdress;
+            String title = context.getResources().getString(R.string.notification_your_lunch) +restaurantName;
+            String message;
+            if(listWorkmates == null){
+                message= context.getResources().getString(R.string.no_workmates) + context.getResources().getString(R.string.adress) +restaurantAdress;
+            }else{
+                 message = context.getResources().getString(R.string.with_workmates) + listWorkmates +context.getResources().getString(R.string.adress) +restaurantAdress;
+            }
             sendVisualNotification(title,message);
         }
     }

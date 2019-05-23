@@ -5,21 +5,13 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
-import android.media.Image;
-import android.support.annotation.BinderThread;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import com.example.go4lunch.Base.BaseActivity;
@@ -37,13 +29,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Calendar;
 
-import butterknife.OnClick;
-
 public class MainActivity extends BaseActivity {
 
 
-    //@BindView(R.id.activity_main_layout)
-    //LinearLayout layout;
     @BindView(R.id.activity_main_google_button)
     Button googleButton;
     private static final int RC_SIGN_IN = 123;
@@ -173,22 +161,6 @@ public class MainActivity extends BaseActivity {
                 RC_SIGN_IN);
     }
 
-    public void printHashKey(Context pContext) {
-        try {
-            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
-            for (Signature signature : info.signatures) {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-                String hashKey = new String(Base64.encode(md.digest(), 0));
-                Log.i("key", "printHashKey() Hash Key: " + hashKey);
-            }
-        } catch (NoSuchAlgorithmException e) {
-            Log.e("key 1", "printHashKey()", e);
-        } catch (Exception e) {
-            Log.e("key 2", "printHashKey()", e);
-        }
-    }
-
     private void startSignInTwitter(){
         startActivityForResult(
                 AuthUI.getInstance()
@@ -200,18 +172,7 @@ public class MainActivity extends BaseActivity {
                 RC_SIGN_IN);
     }
 
-    private void startSignInActivity(){
-        startActivityForResult(
-                AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setAvailableProviders(
-                                Arrays.asList(new AuthUI.IdpConfig.GoogleBuilder().build(),
-                                        new AuthUI.IdpConfig.FacebookBuilder().build(),
-                                        new AuthUI.IdpConfig.TwitterBuilder().build()))
-                        .setIsSmartLockEnabled(false, true)
-                        .build(),
-                RC_SIGN_IN);
-    }
+
     // --------------------
     // UTILS
     // --------------------
