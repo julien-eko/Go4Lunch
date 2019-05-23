@@ -1,6 +1,7 @@
 package com.example.go4lunch;
 
 import com.example.go4lunch.Models.ListRestaurant;
+import com.example.go4lunch.Views.PlaceViewHolder;
 
 import org.junit.Test;
 
@@ -12,10 +13,6 @@ import static org.junit.Assert.*;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class UnitTest {
-    @Test
-    public void addition_isCorrect() {
-        assertEquals(4, 2 + 2);
-    }
 
     @Test
     public void ratingTest() {
@@ -25,5 +22,20 @@ public class UnitTest {
 
     }
 
+@Test
+    public void convertDateFrenchTest(){
+        String date ="1300";
+        String language= "français";
+
+        assertEquals("13h00", PlaceViewHolder.convertDate(date,language));
+}
+
+    @Test
+    public void convertDateEnglishTest(){
+        String date ="1300";
+        String language= "English";
+
+        assertEquals("1.00pm", PlaceViewHolder.convertDate(date,language));
+    }
 
 }

@@ -172,7 +172,7 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
 
                                 restaurant.setSchedule(context.getResources().getString(R.string.closing_soon));
                             } else {
-                                restaurant.setSchedule(context.getResources().getString(R.string.open_until) + convertDate(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime()));
+                                restaurant.setSchedule(context.getResources().getString(R.string.open_until) + convertDate(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime(),Locale.getDefault().getDisplayLanguage()));
                             }
 
                         }
@@ -192,11 +192,11 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
 
     }
 
-    public static String convertDate(String date) {
+    public static String convertDate(String date,String language) {
         int hour = Integer.parseInt(date.substring(0, 2));
         String minute = date.substring(2);
 
-        if( Locale.getDefault().getDisplayLanguage().equals("English")){
+        if( language.equals("English")){
             if (hour > 12) {
                 return (hour - 12) + "." + minute + "pm";
             } else if (hour == 12) {

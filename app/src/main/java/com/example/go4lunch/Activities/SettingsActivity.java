@@ -117,16 +117,18 @@ public class SettingsActivity extends BaseActivity implements CompoundButton.OnC
 
     //configure button return of toolbar
     //bug when use logout after
-    /*
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-        Intent intent = new Intent(SettingsActivity.this, HomePageActivity.class);
-        startActivity(intent);
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
-*/
+
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
@@ -142,7 +144,7 @@ public class SettingsActivity extends BaseActivity implements CompoundButton.OnC
     private void startAlarm() {
         configureAlarmManager();
         AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        //manager.setRepeating(AlarmManager.RTC_WAKEUP, times(12, 0), AlarmManager.INTERVAL_DAY, pendingIntent);
+        //manager.setRepeating(AlarmManager.RTC_WAKEUP, times(), AlarmManager.INTERVAL_DAY, pendingIntent);
 
         manager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, 10, pendingIntent);
         Toast.makeText(this, getResources().getString(R.string.notification_enable), Toast.LENGTH_SHORT).show();
@@ -159,14 +161,12 @@ public class SettingsActivity extends BaseActivity implements CompoundButton.OnC
     /**
      * use for choose times of notification
      *
-     * @param hours  chosse your hours
-     * @param minute choose your minutes
      * @return time in millis
      */
-    private long times(int hours, int minute) {
+    private long times() {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, hours);
-        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
