@@ -94,7 +94,8 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
     private double latitude;
     private List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG);
     private MapViewFragment mapViewFragment;
-    private  ListViewFragment listViewFragment;
+    private ListViewFragment listViewFragment;
+    private WorkmatesFragment workmatesFragment;
 
 
 
@@ -170,14 +171,14 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
                 if(mapViewFragment != null && mapViewFragment.isVisible()){
                     mapViewFragment.updateAutocomplete(place.getLatLng().latitude,place.getLatLng().longitude);
-                    Log.i("mapViewFragment", "map");
+                    //Log.i("mapViewFragment", "map");
                 }
                 else if(listViewFragment != null && listViewFragment.isVisible() ){
                     listViewFragment.updateAutocomplete(place.getLatLng().latitude,place.getLatLng().longitude);
-                    Log.i("listViewFragment", "list");
+                    //Log.i("listViewFragment", "list");
                 }else{
-
-                    Log.i("workmates", "workmate");
+                    workmatesFragment.updateAutocomplete(place.getId());
+                    Log.i("workmates", place.getId());
                 }
 
                 Log.i("place", "Place: " + place.getLatLng().longitude + ", " + place.getLatLng().latitude);
@@ -399,7 +400,7 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
     }
 
     private void configureAndShowWorkmatesFragment() {
-        WorkmatesFragment workmatesFragment = new WorkmatesFragment();
+        workmatesFragment = new WorkmatesFragment();
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.home_page_activity_frame_layout, workmatesFragment,"WorkmatesFragment")
@@ -452,6 +453,7 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
         //Log.i("error autocomplete", "error");
         Intent intent = new Autocomplete.IntentBuilder(
                 AutocompleteActivityMode.OVERLAY,fields)
+                .setTypeFilter(TypeFilter.ESTABLISHMENT)
                 .build(this);
         startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
 

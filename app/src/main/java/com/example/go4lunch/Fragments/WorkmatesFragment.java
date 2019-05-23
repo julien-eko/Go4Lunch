@@ -3,6 +3,7 @@ package com.example.go4lunch.Fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -25,6 +26,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,6 +34,8 @@ import io.reactivex.annotations.NonNull;
 
 public class WorkmatesFragment extends Fragment {
 
+    @BindView(R.id.fragment_workamates_view_swipe_refresh)
+    SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.fragment_workmates_recycler_view)
     RecyclerView recyclerView;
     private WorkmatesAdapter adapter;
@@ -45,14 +49,25 @@ public class WorkmatesFragment extends Fragment {
         ButterKnife.bind(this, view);
         this.configureRecyclerView();
         this.configureOnClickRecyclerView();
+        this.configureSwipeRefreshLayout();
         return view;
     }
 
+
+    private void configureSwipeRefreshLayout() {
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                configureRecyclerView();
+            }
+        });
+    }
 
     private void configureRecyclerView() {
         //Reset list
         //this.list = new ArrayList<>();
         //Create adapter passing the list of users
+        swipeRefreshLayout.setRefreshing(false);
         this.adapter = new WorkmatesAdapter(generateOptionsForAdapter(UserHelper.getAllUsers()), Glide.with(this),false);
         //Attach the adapter to the recyclerview to populate items
         this.recyclerView.setAdapter(this.adapter);
@@ -88,4 +103,13 @@ public class WorkmatesFragment extends Fragment {
                 .build();
     }
 
+    public void updateAutocomplete(String restaurantId){
+        Calendar calendar = Calendar.getInstance();
+        int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
+        this.adapter = new WorkmatesAdapter(generateOptionsForAdapter(UserHelper.getUserByRestaurantIdAndDate(restaurantId,dayOfYear)), Glide.with(this),false);
+        //Attach the adapter to the recyclerview to populate items
+        this.recyclerView.setAdapter(this.adapter);
+        //Set layout manager to position the items
+        //this.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+    }
 }

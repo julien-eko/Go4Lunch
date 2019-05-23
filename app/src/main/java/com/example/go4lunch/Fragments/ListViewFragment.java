@@ -90,6 +90,7 @@ public class ListViewFragment extends Fragment {
     //Configure RecyclerView, Adapter, LayoutManager & glue it together
     private void configureRecyclerView() {
         //Reset list
+
         this.list = new ArrayList<>();
         //Create adapter passing the list of users
         this.adapter = new PlaceAdapter(this.list, Glide.with(this));

@@ -3,9 +3,9 @@
     <string name="app_name">Go4Lunch</string>
     <string name="email_not_found">Email non trouvé</string>
     <string name="enable_notifications">Activer les notifications</string>
-    <string name="hasnt_decided_yet">n\'a pas encore décidé</string>
-    <string name="is_eating_at">déjeunera:</string>
-    <string name="is_joining">se joint!</string>
+    <string name="hasnt_decided_yet">\t n\'a pas encore décidé</string>
+    <string name="is_eating_at">\t déjeunera:\t</string>
+    <string name="is_joining">\t se joint!</string>
     <string name="like">J\'aime</string>
     <string name="list_view">Liste</string>
     <string name="logout">Déconnexion</string>
