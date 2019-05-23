@@ -1,6 +1,7 @@
 package com.example.go4lunch.Views;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.support.v4.graphics.drawable.IconCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Calendar;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,11 +51,13 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
     TextView workmate;
     private String api_key;
     private static Disposable disposable;
+    private static Context context;
 
-    public PlaceViewHolder(View itemView) {
+    public PlaceViewHolder(View itemView,Context context) {
         super(itemView);
         ButterKnife.bind(this, itemView);
         this.api_key = BuildConfig.ApiKey;
+        this.context=context;
     }
 
     //update view
@@ -165,22 +169,23 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
 
                             Log.e("soustraction", Integer.toString(a));
                             if (((Integer.parseInt(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime())) - time) < 70) {
-                                restaurant.setSchedule("Closing Soon");
+
+                                restaurant.setSchedule(context.getResources().getString(R.string.closing_soon));
                             } else {
-                                restaurant.setSchedule("Open until " + convertDate(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime()));
+                                restaurant.setSchedule(context.getResources().getString(R.string.open_until) + convertDate(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime()));
                             }
 
                         }
                     }
                 } else {
-                    restaurant.setSchedule("Open");
+                    restaurant.setSchedule(context.getResources().getString(R.string.open));
                 }
             } else {
-                restaurant.setSchedule("Close");
+                restaurant.setSchedule(context.getResources().getString(R.string.close));
             }
         } else {
 
-                restaurant.setSchedule("No information");
+                restaurant.setSchedule(context.getResources().getString(R.string.no_information));
 
         }
 
@@ -191,15 +196,20 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
         int hour = Integer.parseInt(date.substring(0, 2));
         String minute = date.substring(2);
 
-        if (hour > 12) {
-            return (hour - 12) + "." + minute + "pm";
-        } else if (hour == 12) {
-            return "12" + "." + minute + "pm";
-        } else if (hour == 0) {
-            return "12" + "." + minute + "am";
-        } else {
-            return hour + "." + minute + "am";
+        if( Locale.getDefault().getDisplayLanguage().equals("English")){
+            if (hour > 12) {
+                return (hour - 12) + "." + minute + "pm";
+            } else if (hour == 12) {
+                return "12" + "." + minute + "pm";
+            } else if (hour == 0) {
+                return "12" + "." + minute + "am";
+            } else {
+                return hour + "." + minute + "am";
+            }
+        }else{
+            return hour + "h" +minute;
         }
+
 
 
     }

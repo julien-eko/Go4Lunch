@@ -41,4 +41,9 @@
     <string name="choice_delete_account">Are you sure you want to delete your account?</string>
     <string name="popup_message_choice_yes">yes</string>
     <string name="popup_message_choice_no">no</string>
+    <string name="closing_soon">Closing Soon</string>
+    <string name="open_until">Open until\t</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+    <string name="no_information">No information</string>
 </resources>

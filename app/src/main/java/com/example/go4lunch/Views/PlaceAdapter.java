@@ -31,7 +31,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceViewHolder> {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.fragment_restaurant_item, parent, false);
 
-        return new PlaceViewHolder(view);
+        return new PlaceViewHolder(view,context);
     }
 
     public String getRestaurant(int position){
