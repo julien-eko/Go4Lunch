@@ -37,4 +37,8 @@
     <string name="workmates_title">Aivailable workmates</string>
     <string name="notification_enable">Alarm set !</string>
     <string name="notification_desable">Alarm Canceled !</string>
+    <string name="delete_your_account">Delete your account</string>
+    <string name="choice_delete_account">Are you sure you want to delete your account?</string>
+    <string name="popup_message_choice_yes">yes</string>
+    <string name="popup_message_choice_no">no</string>
 </resources>

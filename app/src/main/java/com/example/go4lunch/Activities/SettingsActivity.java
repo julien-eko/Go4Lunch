@@ -1,8 +1,10 @@
 package com.example.go4lunch.Activities;
 
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.ActionBar;
@@ -12,27 +14,35 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.example.go4lunch.Base.BaseActivity;
 import com.example.go4lunch.Notifications.NotificationsAlarmReceiver;
 import com.example.go4lunch.R;
+import com.example.go4lunch.Utils.Firestore.UserHelper;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-public class SettingsActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener {
+public class SettingsActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener {
 
     private PendingIntent pendingIntent;
     @BindView(R.id.settings_activity_switch)
     Switch notificationsSwitch;
     @BindView(R.id.home_page_activity_toolbar)
     Toolbar toolbar;
+    private static final int DELETE_USER_TASK = 20;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,13 +56,36 @@ public class SettingsActivity extends AppCompatActivity implements CompoundButto
     }
 
     @Override
+    public int getFragmentLayout() {
+        return R.layout.activity_settings;
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-        preferences.edit().putBoolean(FirebaseAuth.getInstance().getCurrentUser().getUid(), notificationsSwitch.isEnabled()).apply();
+        if(getCurrentUser()!=null){
+            SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+            preferences.edit().putBoolean(this.getCurrentUser().getUid(), notificationsSwitch.isEnabled()).apply();
+
+        }
 
     }
 
+
+    @OnClick(R.id.activity_settings_delete_button)
+    public void onCLickDeleteButton() {
+        new AlertDialog.Builder(this)
+                .setMessage(getResources().getString(R.string.choice_delete_account))
+                .setPositiveButton(getResources().getString(R.string.popup_message_choice_yes), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        deleteUserFromFirebase();
+                    }
+                })
+                .setNegativeButton(getResources().getString(R.string.popup_message_choice_no), null)
+                .show();
+
+    }
     public void configureNotificationSwitch(){
         notificationsSwitch.setOnCheckedChangeListener(this);
 
@@ -84,6 +117,7 @@ public class SettingsActivity extends AppCompatActivity implements CompoundButto
 
     //configure button return of toolbar
     //bug when use logout after
+    /*
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -92,7 +126,7 @@ public class SettingsActivity extends AppCompatActivity implements CompoundButto
 
         return super.onOptionsItemSelected(item);
     }
-
+*/
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
@@ -139,5 +173,32 @@ public class SettingsActivity extends AppCompatActivity implements CompoundButto
         return calendar.getTimeInMillis();
     }
 
+    private void deleteUserFromFirebase(){
+        if (getCurrentUser() != null) {
 
+            UserHelper.deleteUser(this.getCurrentUser().getUid()).addOnFailureListener(this.onFailureListener());
+
+            AuthUI.getInstance()
+                    .delete(this)
+                    .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(DELETE_USER_TASK));
+        }
+    }
+
+    private OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted(final int origin){
+        return new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                switch (origin){
+
+                    case DELETE_USER_TASK:
+                        Intent mainActivity = new Intent(SettingsActivity.this,MainActivity.class);
+                        startActivity(mainActivity);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
+    }
 }
+

@@ -71,7 +71,9 @@ public class MainActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // 4 - Handle SignIn Activity response on activity result
-        this.handleResponseAfterSignIn(requestCode, resultCode, data);
+            this.handleResponseAfterSignIn(requestCode, resultCode, data);
+
+
     }
     // --------------------
     // REST REQUEST
@@ -244,7 +246,7 @@ public class MainActivity extends BaseActivity {
     }
 
     public void startActivity(){
-        Intent intent = new Intent(MainActivity.this, HomePageActivity.class);
+        Intent intent = new Intent(this, HomePageActivity.class);
         startActivity(intent);
     }
 }

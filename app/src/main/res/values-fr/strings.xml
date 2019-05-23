@@ -25,4 +25,8 @@
     <string name="navigation_drawer_open">Ouvrir navigation drawer</string>
     <string name="notification_desable">Notifications activé</string>
     <string name="notification_enable">Notification desactivé</string>
+    <string name="delete_your_account">Supprimer votre compte</string>
+    <string name="choice_delete_account">Êtes-vous sûr de vouloir supprimer votre compte?</string>
+    <string name="popup_message_choice_no">Non</string>
+    <string name="popup_message_choice_yes">Yes</string>
 </resources>
