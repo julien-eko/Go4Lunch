@@ -30,10 +30,8 @@ import com.example.go4lunch.Fragments.ListViewFragment;
 import com.example.go4lunch.Fragments.MapViewFragment;
 import com.example.go4lunch.Fragments.WorkmatesFragment;
 import com.example.go4lunch.Models.Firestore.User;
-import com.example.go4lunch.Models.Search.NearbySearch;
 import com.example.go4lunch.R;
 import com.example.go4lunch.Utils.Firestore.UserHelper;
-import com.example.go4lunch.Utils.PlaceStream;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -51,7 +49,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.reactivex.disposables.Disposable;
 
 public class HomePageActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -131,7 +128,6 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-
         switch (id) {
             case R.id.action_search:
                 this.launchAutocompleteActivity();
@@ -141,38 +137,7 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                 Place place = Autocomplete.getPlaceFromIntent(data);
-                //Intent restaurantDetails = new Intent(HomePageActivity.this, RestaurantDetailsActivity.class);
-                //restaurantDetails.putExtra("restaurant", place.getId());
-                //restaurantDetails.putExtra("photo","CmRaAAAAlUFjg43lm9juZcUAjXSB1gYhy7duencSe3rO881TDyGmgJfR9HSucAUoXCw3pq8LnD9nrBrSI2zKFlKsRMcohDWCf745VWYqqFx1V1AYriTXy428h2WajrZVxyGdj5wXEhA3fEMBT3owiQuHjVAV23KgGhQ8jEER6spd1wo0LQWuLP4dYN7P2g");
-                //startActivity(restaurantDetails);
 
-                if(mapViewFragment != null && mapViewFragment.isVisible()){
-                    mapViewFragment.updateAutocomplete(place.getLatLng().latitude,place.getLatLng().longitude);
-                    //Log.i("mapViewFragment", "map");
-                }
-                else if(listViewFragment != null && listViewFragment.isVisible() ){
-                    listViewFragment.updateAutocomplete(place.getLatLng().latitude,place.getLatLng().longitude);
-                    //Log.i("listViewFragment", "list");
-                }else{
-                    workmatesFragment.updateAutocomplete(place.getId());
-                    Log.i("workmates", place.getId());
-                }
-
-                Log.i("place", "Place: " + place.getLatLng().longitude + ", " + place.getLatLng().latitude);
-            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-                // TODO: Handle the error.
-                Status status = Autocomplete.getStatusFromIntent(data);
-                Log.i("error autocomplete", status.getStatusMessage());
-            } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
-            }
-        }
-    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -199,6 +164,7 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
         return true;
     }
 
+    //open restaurantdetailsActivity if user choose restaurant else show toast message
     private void yourLunch() {
         UserHelper.getUser(this.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -223,23 +189,15 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
     }
 
-    // --------------------
-    // REST REQUESTS
-    // --------------------
-    // 1 - Create http requests (SignOut & Delete)
-
+    //SignOut
     private void signOutUserFromFirebase() {
         AuthUI.getInstance()
                 .signOut(this)
                 .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
     }
 
-    // --------------------
-    // UI
-    // --------------------
 
-
-    // 3 - Create OnCompleteListener called after tasks ended
+    //  Create OnCompleteListener called after tasks ended
     private OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted(final int origin) {
         return new OnSuccessListener<Void>() {
             @Override
@@ -255,6 +213,9 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
         };
     }
 
+    // --------------
+    // Configure
+    // --------------
     private void configureToolBar() {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(getResources().getString(R.string.map_list_title));
@@ -282,8 +243,6 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
             //Get email & username from Firebase
             String email = TextUtils.isEmpty(this.getCurrentUser().getEmail()) ? "" : this.getCurrentUser().getEmail();
-
-
             String username = TextUtils.isEmpty(this.getCurrentUser().getDisplayName()) ? getResources().getString(R.string.no_name_found) : this.getCurrentUser().getDisplayName();
 
             this.name.setText(username);
@@ -392,26 +351,44 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
 
 
-    private void updateUI(NearbySearch nearbySearch){
-
-        for(int i=0;i<nearbySearch.getResults().size();i++){
-
-        }
-
-    }
-
+//AutoComplete
     private void launchAutocompleteActivity() {
 
-
-        //Log.i("error autocomplete", "error");
         Intent intent = new Autocomplete.IntentBuilder(
                 AutocompleteActivityMode.OVERLAY,fields)
                 .setTypeFilter(TypeFilter.ESTABLISHMENT)
                 .build(this);
         startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
 
-
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+
+                if(mapViewFragment != null && mapViewFragment.isVisible()){
+                    mapViewFragment.updateAutocomplete(place.getLatLng().latitude,place.getLatLng().longitude);
+
+                }
+                else if(listViewFragment != null && listViewFragment.isVisible() ){
+                    listViewFragment.updateAutocomplete(place.getLatLng().latitude,place.getLatLng().longitude);
+
+                }else{
+                    workmatesFragment.updateAutocomplete(place.getId());
+
+                }
+
+                Log.i("place", "Place: " + place.getLatLng().longitude + ", " + place.getLatLng().latitude);
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.i("error autocomplete", status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
+    }
 
 }

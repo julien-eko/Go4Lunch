@@ -1,19 +1,16 @@
 package com.example.go4lunch.Views;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.RequestManager;
 import com.example.go4lunch.Models.Firestore.User;
-import com.example.go4lunch.Models.Restaurant;
 import com.example.go4lunch.R;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
-import java.util.List;
 
 import io.reactivex.annotations.NonNull;
 

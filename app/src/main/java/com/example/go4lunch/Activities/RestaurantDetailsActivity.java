@@ -99,7 +99,7 @@ public class RestaurantDetailsActivity extends BaseActivity {
         this.executeHttpRequestWithRetrofit();
     }
 
-
+    //button for choice of restaurant
     @OnClick(R.id.activity_restaurant_floating_action_button)
     public void OnClickFloatingButton() {
 
@@ -119,6 +119,7 @@ public class RestaurantDetailsActivity extends BaseActivity {
         }
     }
 
+    //button like
     @OnClick(R.id.activity_restaurant_like_button)
     public void OnClickLikeButton() {
         if (floatingActionButton.isActivated() == false) {
@@ -140,6 +141,7 @@ public class RestaurantDetailsActivity extends BaseActivity {
         }
     }
 
+    //Web site button
     @OnClick(R.id.activity_restaurant_website_button)
     public void OnClickWebButton(){
 
@@ -147,13 +149,13 @@ public class RestaurantDetailsActivity extends BaseActivity {
             Toast.makeText(this,"no website for this restaurant",Toast.LENGTH_LONG).show();
         }else{
             Intent webView = new Intent(RestaurantDetailsActivity.this, WebViewActivity.class);
-           // Log.e("site", webSite);
             webView.putExtra("url", webSite);
             startActivity(webView);
         }
 
     }
 
+    //call button
     @OnClick(R.id.activity_restaurant_call_button)
     public void onCLickCallButton(){
         Intent callIntent = new Intent(Intent.ACTION_CALL);
@@ -204,6 +206,7 @@ public class RestaurantDetailsActivity extends BaseActivity {
 
     }
 
+
     private void configurelike() {
         RestaurantsHelper.getRestaurant(this.getCurrentUser().getUid(), restautantId).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -230,7 +233,7 @@ public class RestaurantDetailsActivity extends BaseActivity {
 
     }
 
-
+    //add restaurant like in firebase
     private void restaurantFiresstore() {
 
         RestaurantsHelper.getRestaurant(this.getCurrentUser().getUid(), restautantId).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -251,7 +254,7 @@ public class RestaurantDetailsActivity extends BaseActivity {
 
     }
 
-
+    // request http
     private void executeHttpRequestWithRetrofit() {
         disposable = PlaceStream.streamDetails(restautantId).subscribeWith(new DisposableObserver<Details>() {
             @Override
@@ -278,7 +281,7 @@ public class RestaurantDetailsActivity extends BaseActivity {
         });
     }
 
-
+    //update view
     public void update(Details details) {
         this.adress.setText(details.getResult().getFormattedAddress());
         this.nameRestaurant.setText(details.getResult().getName());
@@ -311,10 +314,8 @@ public class RestaurantDetailsActivity extends BaseActivity {
 
     }
 
-    // 3 - Update User Username
+    //update restaurant information
     private void updateRestaurantInFirebase() {
-
-
         String restaurant = restautantId;
 
         if (this.getCurrentUser() != null) {
@@ -331,6 +332,7 @@ public class RestaurantDetailsActivity extends BaseActivity {
         }
     }
 
+    //delete restaurant in database of user
     private void deleteChoiceRestaurant() {
         if (this.getCurrentUser() != null) {
             UserHelper.updateChoiceRestaurant(null, this.getCurrentUser().getUid());
@@ -339,6 +341,7 @@ public class RestaurantDetailsActivity extends BaseActivity {
         }
     }
 
+    //calculate the number of stars
     public static Integer rating(double rating) {
         rating = (rating / 5) * 3;
 
@@ -361,6 +364,7 @@ public class RestaurantDetailsActivity extends BaseActivity {
         this.recyclerView.setAdapter(this.adapter);
         this.recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
+
 
     private FirestoreRecyclerOptions<User> generateOptionsForAdapter (Query query)
     {

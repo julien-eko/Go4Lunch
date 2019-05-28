@@ -9,23 +9,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.go4lunch.Activities.HomePageActivity;
 import com.example.go4lunch.Activities.RestaurantDetailsActivity;
 import com.example.go4lunch.Models.Firestore.User;
 import com.example.go4lunch.R;
 import com.example.go4lunch.Utils.Firestore.UserHelper;
 import com.example.go4lunch.Utils.ItemClickSupport;
-import com.example.go4lunch.Views.PlaceAdapter;
 import com.example.go4lunch.Views.WorkmatesAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 
 import butterknife.BindView;
@@ -63,9 +57,8 @@ public class WorkmatesFragment extends Fragment {
         });
     }
 
+    //recyclerView with workmates
     private void configureRecyclerView() {
-        //Reset list
-        //this.list = new ArrayList<>();
         //Create adapter passing the list of users
         swipeRefreshLayout.setRefreshing(false);
         this.adapter = new WorkmatesAdapter(generateOptionsForAdapter(UserHelper.getAllUsers()), Glide.with(this),false);
@@ -77,6 +70,7 @@ public class WorkmatesFragment extends Fragment {
 
     }
 
+    //open restaurantDetailsActivity when user click on item
     private void configureOnClickRecyclerView(){
         ItemClickSupport.addTo(recyclerView, R.layout.fragment_workmates_item)
                 .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
@@ -103,13 +97,11 @@ public class WorkmatesFragment extends Fragment {
                 .build();
     }
 
+    //function autocomplete
     public void updateAutocomplete(String restaurantId){
         Calendar calendar = Calendar.getInstance();
         int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
         this.adapter = new WorkmatesAdapter(generateOptionsForAdapter(UserHelper.getUserByRestaurantIdAndDate(restaurantId,dayOfYear)), Glide.with(this),false);
-        //Attach the adapter to the recyclerview to populate items
         this.recyclerView.setAdapter(this.adapter);
-        //Set layout manager to position the items
-        //this.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 }

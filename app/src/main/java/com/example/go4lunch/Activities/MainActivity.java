@@ -1,13 +1,8 @@
 package com.example.go4lunch.Activities;
 
-import android.content.Context;
+
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.os.Bundle;
-import android.util.Base64;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
@@ -24,8 +19,6 @@ import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Calendar;
 
@@ -44,21 +37,13 @@ public class MainActivity extends BaseActivity {
     @Override
     public int getFragmentLayout() { return R.layout.activity_main; }
 
-/*
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // 5 - Update UI when activity is resuming
-        this.updateUIWhenResuming();
-    }
-*/
 
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // 4 - Handle SignIn Activity response on activity result
+        //  Handle SignIn Activity response on activity result
             this.handleResponseAfterSignIn(requestCode, resultCode, data);
 
 
@@ -101,39 +86,20 @@ public class MainActivity extends BaseActivity {
 
     @OnClick(R.id.activity_main_google_button)
     public void onClickGoogleButton(){
-/*
-        // 4 - Start appropriate activity
-        if (this.isCurrentUserLogged()){
-            this.startActivity();
-        } else {
-            this.startSignInActivity();
-        }
-*/
         this.startSignInGoogle();
     }
 
     @OnClick(R.id.activity_main_twitter_button)
     public void onClickTwitterButton(){
-
         this.startSignInTwitter();
     }
     @OnClick(R.id.activity_main_facebook_button)
     public void onClickFacebookButton(){
-
         this.startSignInFacebook();
     }
 
 
     // --------------------
-    // UI
-    // --------------------
-
-    // 2 - Show Snack Bar with a message
-    private void showSnackBar(LinearLayout Layout, String message){
-        //Snackbar.make(layout, message, Snackbar.LENGTH_SHORT).show();
-    }
-
-// --------------------
     // NAVIGATION
     // --------------------
 
@@ -177,12 +143,11 @@ public class MainActivity extends BaseActivity {
     // UTILS
     // --------------------
 
-    // 3 - Method that handles response after SignIn Activity close
+    //Method that handles response after SignIn Activity close
     private void handleResponseAfterSignIn(int requestCode, int resultCode, Intent data){
 
         IdpResponse response = IdpResponse.fromResultIntent(data);
 
-        //Log.i("co", Integer.toString(requestCode));
 
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) { // SUCCESS
@@ -191,20 +156,16 @@ public class MainActivity extends BaseActivity {
                 this.startActivity();
             } else { // ERRORS
                 if (response == null) {
-                  //  showSnackBar(this.layout, "error");
+
                 } else if (response.getError().getErrorCode() == ErrorCodes.NO_NETWORK) {
-                    //showSnackBar(this.layout, "no intenet");
+
                 } else if (response.getError().getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
-                    //showSnackBar(this.layout, "unknow error");
+
                 }
             }
         }
     }
 
-    // 2 - Update UI when activity is resuming
-    private void updateUIWhenResuming(){
-       // this.googleButton.setText(this.isCurrentUserLogged() ? "Afficher map" : "CONNEXION");
-    }
 
     public void startActivity(){
         Intent intent = new Intent(this, HomePageActivity.class);

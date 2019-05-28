@@ -28,20 +28,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public abstract int getFragmentLayout();
 
+
+
     // --------------------
-    // UI
-    // --------------------
-/*
-    protected void configureToolbar(){
-        ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
-    }
-
-
-
-    */
-
-// --------------------
     // ERROR HANDLER
     // --------------------
 
@@ -59,8 +48,5 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Nullable
     protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
-
-    protected Boolean isCurrentUserLogged(){ return (this.getCurrentUser() != null); }
-
 
 }

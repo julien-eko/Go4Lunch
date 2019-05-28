@@ -1,8 +1,6 @@
 package com.example.go4lunch.Views;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -10,16 +8,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
-import com.example.go4lunch.BuildConfig;
-import com.example.go4lunch.Models.Firestore.Restaurants;
 import com.example.go4lunch.Models.Firestore.User;
-import com.example.go4lunch.Models.Restaurant;
 import com.example.go4lunch.R;
-import com.example.go4lunch.Utils.Firestore.RestaurantsHelper;
-import com.example.go4lunch.Utils.Firestore.UserHelper;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.Calendar;
 
@@ -43,7 +33,7 @@ public class WorkmatesViewHolder extends RecyclerView.ViewHolder {
         this.isActivityRestaurant=isActivityRestaurant;
     }
 
-    //update view
+    //update view activityRestaurantDetail or fragment workmate
     public void updateUser(User user, RequestManager glide) {
 
             Calendar calendar = Calendar.getInstance();

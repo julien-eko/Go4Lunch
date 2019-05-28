@@ -63,15 +63,15 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
     //update view
     public void updateWithTimesUser(Restaurant restaurant, RequestManager glide) {
 
-
         this.name.setText(restaurant.getNameRestaurant());
         this.address.setText(restaurant.getAddress());
 
-        //this.openHours.setText(restaurant.getSchedule());
+        //schedule of restaurant
         executeHttpRequestWithRetrofit(restaurant.getId(),restaurant,openHours);
-        //this.openHours.setText(restaurant.getSchedule());
 
         this.distance.setText(restaurant.getDistance());
+
+        //search workmate lunch his restaurant
         workmateNumber(restaurant.getId(),workmate);
 
 
@@ -88,6 +88,7 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
             stars1.setVisibility(View.INVISIBLE);
         }
 
+        //image restaurant if exist else return default image
         if (restaurant.getImage() != null) {
             String photoUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" + restaurant.getImage() + "&key=" + api_key;
             glide.load(photoUrl).into(image);
@@ -122,7 +123,7 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
         });
     }
 
-
+    //http request for openingHour
     private static void executeHttpRequestWithRetrofit(String placeId, Restaurant restaurant,TextView openHours) {
         disposable = PlaceStream.streamDetails(placeId).subscribeWith(new DisposableObserver<Details>() {
             @Override
@@ -144,7 +145,7 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
         });
     }
 
-
+    //formated oppeningHours
     public static void update(Details details, Restaurant restaurant) {
 
         Calendar calendar = Calendar.getInstance();
@@ -164,10 +165,7 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
                     for (int i = 0; i <= dayOfWeek; i++) {
                         if (Integer.parseInt(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime()) > time) {
                             Integer a = (Integer.parseInt(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime())) - time;
-                            Log.e("fermeture", Integer.toString(Integer.parseInt(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime())));
-                            Log.e("heure ", Integer.toString(time));
 
-                            Log.e("soustraction", Integer.toString(a));
                             if (((Integer.parseInt(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime())) - time) < 70) {
 
                                 restaurant.setSchedule(context.getResources().getString(R.string.closing_soon));
@@ -192,6 +190,7 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
 
     }
 
+    //convert date french and english supportted
     public static String convertDate(String date,String language) {
         int hour = Integer.parseInt(date.substring(0, 2));
         String minute = date.substring(2);

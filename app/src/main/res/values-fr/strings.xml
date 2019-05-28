@@ -36,6 +36,7 @@
     <string name="open_until">"Ouvert jusqu'a "</string>
     <string name="no_workmates">pas de collègues</string>
     <string name="notification_your_lunch">"Mon déjeuner: "</string>
-    <string name="with_workmates">avec collègues :</string>
-    <string name="adress">. Adresse</string>
+    <string name="with_workmates">Collègues :</string>
+    <string name="adress">Adresse :</string>
+    <string name="call" translatable="false">APPELLER</string>
 </resources>

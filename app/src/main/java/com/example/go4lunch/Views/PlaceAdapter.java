@@ -34,13 +34,17 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceViewHolder> {
         return new PlaceViewHolder(view,context);
     }
 
+    //return id restaurant
     public String getRestaurant(int position){
         return this.list.get(position).getId();
     }
 
+    //retuen url image
     public String getPhoto(int position){
         return this.list.get(position).getImage();
     }
+
+
     // UPDATE VIEW
     @Override
     public void onBindViewHolder(PlaceViewHolder viewHolder, int position) {

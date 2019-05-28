@@ -47,7 +47,7 @@
     <string name="close">Close</string>
     <string name="no_information">No information</string>
     <string name="notification_your_lunch">Your lunch:</string>
-    <string name="with_workmates">with workmate :</string>
-    <string name="adress">. Adress:</string>
+    <string name="with_workmates">Workmate :</string>
+    <string name="adress">Adress :</string>
     <string name="no_workmates">No workamtes</string>
 </resources>

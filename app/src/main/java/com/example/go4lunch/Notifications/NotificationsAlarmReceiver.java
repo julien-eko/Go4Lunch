@@ -6,13 +6,9 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.media.RingtoneManager;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
-
 import com.example.go4lunch.Activities.MainActivity;
 import com.example.go4lunch.Models.Firestore.User;
 import com.example.go4lunch.R;
@@ -21,9 +17,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.RemoteMessage;
-
 import java.util.Calendar;
 
 
@@ -41,12 +34,10 @@ public class NotificationsAlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         this.context=context;
         restaurantInfo();
-        //Log.e("key 1", "notification");
-       // sendVisualNotification("test","bonjour");
     }
 
-    // ---
 
+    //search info of restaurant selected by user
     private void restaurantInfo(){
         UserHelper.getUser(FirebaseAuth.getInstance().getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -70,6 +61,7 @@ public class NotificationsAlarmReceiver extends BroadcastReceiver {
 
     }
 
+    //create string with all workmate interested by same restaurant that user
     private void workamateList(String restaurantId){
         UserHelper.getUsersInterestedByRestaurant(restaurantId).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -100,19 +92,31 @@ public class NotificationsAlarmReceiver extends BroadcastReceiver {
         });
     }
 
+
+    //send notification if user choice a restaurant
     private void sendNotification(){
         if(isLunch){
             String title = context.getResources().getString(R.string.notification_your_lunch) +restaurantName;
-            String message;
+            String messageWorkmates;
+            String messageAdress;
             if(listWorkmates == null){
-                message= context.getResources().getString(R.string.no_workmates) + context.getResources().getString(R.string.adress) +restaurantAdress;
+                messageWorkmates= context.getResources().getString(R.string.no_workmates);
+                messageAdress =context.getResources().getString(R.string.adress) +restaurantAdress;
             }else{
-                 message = context.getResources().getString(R.string.with_workmates) + listWorkmates +context.getResources().getString(R.string.adress) +restaurantAdress;
+                 messageWorkmates = context.getResources().getString(R.string.with_workmates) + listWorkmates  ;
+                 messageAdress = context.getResources().getString(R.string.adress) +restaurantAdress;
             }
-            sendVisualNotification(title,message);
+            sendVisualNotification(title,messageWorkmates,messageAdress);
         }
     }
-    private void sendVisualNotification(String title,String messageBody) {
+
+    /**
+     * create nootification
+     * @param title title of notification
+     * @param messageWorkamates first line of notification
+     * @param messageAdress second line of notification
+     */
+    private void sendVisualNotification(String title,String messageWorkamates,String messageAdress) {
 
         // 1 - Create an Intent that will be shown when user will click on the Notification
         Intent intent = new Intent(this.context, MainActivity.class);
@@ -121,7 +125,8 @@ public class NotificationsAlarmReceiver extends BroadcastReceiver {
         // 2 - Create a Style for the Notification
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         inboxStyle.setBigContentTitle(title);
-        inboxStyle.addLine(messageBody);
+        inboxStyle.addLine(messageWorkamates);
+        inboxStyle.addLine(messageAdress);
 
         // 3 - Create a Channel (Android 8)
         String channelId = "notification_channel_id";

@@ -1,12 +1,10 @@
 package com.example.go4lunch.Fragments;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
@@ -14,32 +12,22 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Toast;
-
-import com.example.go4lunch.Activities.HomePageActivity;
 import com.example.go4lunch.Activities.RestaurantDetailsActivity;
-import com.example.go4lunch.Models.Firestore.User;
 import com.example.go4lunch.Models.Search.NearbySearch;
 import com.example.go4lunch.Models.Search.Result;
 import com.example.go4lunch.R;
 import com.example.go4lunch.Utils.Firestore.UserHelper;
 import com.example.go4lunch.Utils.PlaceStream;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.PlaceDetectionClient;
-import com.google.android.gms.location.places.PlaceLikelihood;
-import com.google.android.gms.location.places.PlaceLikelihoodBufferResponse;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -47,7 +35,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -55,9 +42,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -65,8 +49,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 
@@ -96,13 +78,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Vie
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
     private static Location mLastKnownLocation;
-
-    // Used for selecting the current place.
-    //private static final int M_MAX_ENTRIES = 5;
-    //private String[] mLikelyPlaceNames;
-    //private String[] mLikelyPlaceAddresses;
-    //private String[] mLikelyPlaceAttributions;
-    //private LatLng[] mLikelyPlaceLatLngs;
 
     private GoogleMap mMap;
     private ImageButton positionButton;
@@ -154,7 +129,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Vie
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-// Do other setup activities here too, as described elsewhere in this tutorial.
 
         // Turn on the My Location layer and the related control on the map.
         updateLocationUI();
@@ -164,12 +138,11 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Vie
 
     }
 
+    //center map on my position
     @Override
     public void onClick(View v) {
-
         // Get the current location of the device and set the position of the map.
         mMap.clear();
-
         getDeviceLocation();
 
     }
@@ -263,9 +236,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Vie
     }
 
 
-
-
-
     // -------------------
     // HTTP (RxJAVA)
     // -------------------
@@ -303,11 +273,10 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Vie
         this.disposeWhenDestroy();
     }
 
-
+    //add a marker to each restaurant on the map
     private void addMarker(List<Result> results) {
 
         this.listRestaurant.addAll(results);
-        //DataSingleton.getInstance().setPlaceDetailList(listRestaurant);
         mMap.setOnMarkerClickListener(this);
         if (listRestaurant.size() != 0 || listRestaurant != null) {
             for (int i = 0; i < listRestaurant.size(); i++) {
@@ -332,6 +301,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Vie
     }
 
 
+    //if a workmate has already planned to go to lunch at a restaurant changes the color of the marker
     private void changeMarker(String restaurantId, final Marker marker) {
 
         UserHelper.getUsersInterestedByRestaurant(restaurantId).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -360,7 +330,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Vie
         });
     }
 
-
+    //when user click on marker open restaurantDetailActivity
     @Override
     public boolean onMarkerClick(final Marker marker) {
 
@@ -386,6 +356,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Vie
         return true;
     }
 
+    //change icon marker
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
         Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
         vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
@@ -395,7 +366,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Vie
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
-
+    //function autocomplete
     public void updateAutocomplete(Double latitude, Double longitude) {
         mMap.clear();
         markerMap.clear();

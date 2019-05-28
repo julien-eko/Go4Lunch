@@ -1,18 +1,16 @@
 package com.example.go4lunch.Activities;
 
-import android.content.Intent;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.webkit.WebView;
-import android.widget.Toolbar;
 
 import com.example.go4lunch.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+
+//Open website of restaurant
 public class WebViewActivity extends AppCompatActivity {
 
 

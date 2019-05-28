@@ -56,6 +56,7 @@ public class SettingsActivity extends BaseActivity implements CompoundButton.OnC
         return R.layout.activity_settings;
     }
 
+    //save notification status
     @Override
     public void onStop() {
         super.onStop();
@@ -67,7 +68,7 @@ public class SettingsActivity extends BaseActivity implements CompoundButton.OnC
 
     }
 
-
+    //button delete user
     @OnClick(R.id.activity_settings_delete_button)
     public void onCLickDeleteButton() {
         new AlertDialog.Builder(this)
@@ -82,6 +83,8 @@ public class SettingsActivity extends BaseActivity implements CompoundButton.OnC
                 .show();
 
     }
+
+    ////notification switch button
     public void configureNotificationSwitch(){
         notificationsSwitch.setOnCheckedChangeListener(this);
 
@@ -97,7 +100,7 @@ public class SettingsActivity extends BaseActivity implements CompoundButton.OnC
         Intent alarmIntent = new Intent(SettingsActivity.this, NotificationsAlarmReceiver.class);
 
         pendingIntent = PendingIntent.getBroadcast(SettingsActivity.this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        // Log.e("key 1", "alarm manager");
+
     }
 
     private void configureToolBar() {
@@ -106,12 +109,10 @@ public class SettingsActivity extends BaseActivity implements CompoundButton.OnC
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_white_24);
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle("Settings");
+        actionBar.setTitle(getResources().getString(R.string.settings));
     }
 
     //configure button return of toolbar
-    //bug when use logout after
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -123,6 +124,7 @@ public class SettingsActivity extends BaseActivity implements CompoundButton.OnC
         return super.onOptionsItemSelected(item);
     }
 
+    //start/stop alarm when click on switch
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
@@ -134,13 +136,11 @@ public class SettingsActivity extends BaseActivity implements CompoundButton.OnC
 
 
 
-    // Start Alarm at 19:00 and repeat all day if actived if one category or more selected
+    // Start Alarm at 12 and repeat all day if actived if one category or more selected
     private void startAlarm() {
         configureAlarmManager();
         AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         manager.setRepeating(AlarmManager.RTC_WAKEUP, times(), AlarmManager.INTERVAL_DAY, pendingIntent);
-
-        //manager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, 10, pendingIntent);
         Toast.makeText(this, getResources().getString(R.string.notification_enable), Toast.LENGTH_SHORT).show();
 
     }
@@ -155,7 +155,7 @@ public class SettingsActivity extends BaseActivity implements CompoundButton.OnC
     /**
      * use for choose times of notification
      *
-     * @return time in millis
+     * @return 12H00 in millis
      */
     private long times() {
         Calendar calendar = Calendar.getInstance();
@@ -167,6 +167,7 @@ public class SettingsActivity extends BaseActivity implements CompoundButton.OnC
         return calendar.getTimeInMillis();
     }
 
+    //delet user of firebase and database
     private void deleteUserFromFirebase(){
         if (getCurrentUser() != null) {
             SharedPreferences preferences = getPreferences(MODE_PRIVATE);
@@ -179,6 +180,7 @@ public class SettingsActivity extends BaseActivity implements CompoundButton.OnC
         }
     }
 
+    //return on mainactivity when user delete his account
     private OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted(final int origin){
         return new OnSuccessListener<Void>() {
             @Override

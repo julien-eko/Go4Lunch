@@ -1,6 +1,6 @@
 package com.example.go4lunch.Models.Firestore;
 
-import android.support.annotation.Nullable;
+
 
 public class Restaurants {
 
