@@ -50,4 +50,7 @@
     <string name="with_workmates">Workmate :</string>
     <string name="adress">Adress :</string>
     <string name="no_workmates">No workamtes</string>
+    <string name="No_restaurant">No restaurant selected today</string>
+    <string name="need_position">The application needs your position</string>
+    <string name="loading">loading...</string>
 </resources>

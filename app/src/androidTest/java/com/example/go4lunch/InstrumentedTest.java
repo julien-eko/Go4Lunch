@@ -1,8 +1,8 @@
 package com.example.go4lunch;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.runner.AndroidJUnit4;
 
 import com.example.go4lunch.Models.Details.Details;
 import com.example.go4lunch.Models.Search.NearbySearch;

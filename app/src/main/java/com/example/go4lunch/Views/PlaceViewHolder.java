@@ -1,10 +1,9 @@
 package com.example.go4lunch.Views;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.v4.graphics.drawable.IconCompat;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -13,7 +12,6 @@ import com.bumptech.glide.RequestManager;
 import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.Models.Details.Details;
 import com.example.go4lunch.Models.Restaurant;
-import com.example.go4lunch.Models.Search.Result;
 import com.example.go4lunch.R;
 import com.example.go4lunch.Utils.Firestore.UserHelper;
 import com.example.go4lunch.Utils.PlaceStream;
@@ -161,18 +159,24 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
         Calendar.getInstance().getTime();
         if (details.getResult().getOpeningHours() != null) {
             if (details.getResult().getOpeningHours().getOpenNow()) {
-                if (details.getResult().getOpeningHours().getPeriods().size() != 0) {
+                if (details.getResult().getOpeningHours().getPeriods().size() > 1) {
                     for (int i = 0; i <= dayOfWeek; i++) {
-                        if (Integer.parseInt(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime()) > time) {
-                            Integer a = (Integer.parseInt(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime())) - time;
+                        if (details.getResult().getOpeningHours().getPeriods().size() > i) {
+                            if (Integer.parseInt(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime()) > time) {
+                                Integer a = (Integer.parseInt(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime())) - time;
 
-                            if (((Integer.parseInt(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime())) - time) < 70) {
+                                if (((Integer.parseInt(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime())) - time) < 70) {
 
-                                restaurant.setSchedule(context.getResources().getString(R.string.closing_soon));
-                            } else {
-                                restaurant.setSchedule(context.getResources().getString(R.string.open_until) + convertDate(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime(),Locale.getDefault().getDisplayLanguage()));
+                                    restaurant.setSchedule(context.getResources().getString(R.string.closing_soon));
+                                } else {
+                                    restaurant.setSchedule(context.getResources().getString(R.string.open_until) + convertDate(details.getResult().getOpeningHours().getPeriods().get(i).getClose().getTime(), Locale.getDefault().getDisplayLanguage()));
+                                }
+
                             }
 
+
+                        }else{
+                            restaurant.setSchedule(context.getResources().getString(R.string.open));
                         }
                     }
                 } else {

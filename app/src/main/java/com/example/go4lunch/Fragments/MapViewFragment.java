@@ -8,16 +8,17 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.core.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+
 import com.example.go4lunch.Activities.RestaurantDetailsActivity;
 import com.example.go4lunch.Models.Search.NearbySearch;
 import com.example.go4lunch.Models.Search.Result;
@@ -48,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
@@ -69,11 +71,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Vie
     // not granted.
     private final LatLng mDefaultLocation = new LatLng(-33.8523341, 151.2106085);
     private static final int DEFAULT_ZOOM = 15;
-    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean mLocationPermissionGranted;
-
-
-
 
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
@@ -112,8 +110,13 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Vie
         // Construct a PlaceDetectionClient.
         mPlaceDetectionClient = Places.getPlaceDetectionClient(getContext());
 
+
         // Construct a FusedLocationProviderClient.
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
+
+
+        mLocationPermissionGranted = true;
+
 
         positionButton = (ImageButton) view.findViewById(R.id.position_button);
         positionButton.setOnClickListener(this);
@@ -124,14 +127,13 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Vie
 
 
 
-
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
         // Turn on the My Location layer and the related control on the map.
-        updateLocationUI();
+
+       // updateLocationUI();
 
         // Get the current location of the device and set the position of the map.
         getDeviceLocation();
@@ -147,59 +149,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Vie
 
     }
 
-    private void getLocationPermission() {
-        /*
-         * Request location permission, so that we can get the location of the
-         * device. The result of the permission request is handled by a callback,
-         * onRequestPermissionsResult.
-         */
-        if (ContextCompat.checkSelfPermission(getContext(),
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            mLocationPermissionGranted = true;
-        } else {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[],
-                                           @NonNull int[] grantResults) {
-        mLocationPermissionGranted = false;
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mLocationPermissionGranted = true;
-                }
-            }
-        }
-        updateLocationUI();
-    }
-
-    private void updateLocationUI() {
-        if (mMap == null) {
-            return;
-        }
-        try {
-            if (mLocationPermissionGranted) {
-                mMap.setMyLocationEnabled(true);
-                mMap.getUiSettings().setMyLocationButtonEnabled(true);
-            } else {
-                mMap.setMyLocationEnabled(false);
-                mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                mLastKnownLocation = null;
-                getLocationPermission();
-            }
-        } catch (SecurityException e) {
-            Log.e("Exception: %s", e.getMessage());
-        }
-    }
-
 
     private void getDeviceLocation() {
         /*
@@ -213,6 +162,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Vie
                     @Override
                     public void onComplete(@NonNull Task<Location> task) {
                         if (task.isSuccessful()) {
+
                             // Set the map's camera position to the current location of the device.
                             mLastKnownLocation = task.getResult();
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
@@ -347,7 +297,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Vie
             photo = null;
         }
 
-        //Toast.makeText(getActivity(),photo, Toast.LENGTH_LONG).show();
+
         Intent restaurantDetails = new Intent(MapViewFragment.this.getActivity(), RestaurantDetailsActivity.class);
         restaurantDetails.putExtra("restaurant", result.getPlaceId());
         restaurantDetails.putExtra("photo", photo);

@@ -39,4 +39,7 @@
     <string name="with_workmates">Collègues :</string>
     <string name="adress">Adresse :</string>
     <string name="call" translatable="false">APPELLER</string>
+    <string name="No_restaurant">Pas de restaurant selectionné aujourd\'hui</string>
+    <string name="need_position">L\'application a besoin de votre position</string>
+    <string name="loading">chargement...</string>
 </resources>

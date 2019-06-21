@@ -8,7 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 import com.example.go4lunch.Activities.MainActivity;
 import com.example.go4lunch.Models.Firestore.User;
 import com.example.go4lunch.R;

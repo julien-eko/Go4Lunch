@@ -1,8 +1,6 @@
 package com.example.go4lunch.Models.Firestore;
 
-import android.support.annotation.Nullable;
-
-import java.util.Date;
+import androidx.annotation.Nullable;
 
 public class User {
 

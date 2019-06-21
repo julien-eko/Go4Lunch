@@ -4,13 +4,13 @@ package com.example.go4lunch.Activities;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
+import androidx.annotation.NonNull;
+import com.google.android.material.navigation.NavigationView;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -45,6 +45,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -181,7 +183,7 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
                     restaurantDetails.putExtra("photo", restaurantPicture);
                     startActivity(restaurantDetails);
                 }else{
-                    Toast.makeText(getBaseContext(), "No restaurant selected today",
+                    Toast.makeText(getBaseContext(), getResources().getString(R.string.No_restaurant),
                             Toast.LENGTH_LONG).show();
                 }
             }
@@ -275,17 +277,18 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
     @OnClick(R.id.home_page_activity_list_view_button)
     public void onClickListView() {
-        toolbar.setTitle(getResources().getString(R.string.map_list_title));
-        this.configureAndShowListViewFragment();
-        mapViewButton.setTextColor(getResources().getColor(R.color.black));
-        listViewButton.setTextColor(getResources().getColor(R.color.colorPrimary));
-        workmatesButton.setTextColor(getResources().getColor(R.color.black));
+            toolbar.setTitle(getResources().getString(R.string.map_list_title));
+            this.configureAndShowListViewFragment();
+            mapViewButton.setTextColor(getResources().getColor(R.color.black));
+            listViewButton.setTextColor(getResources().getColor(R.color.colorPrimary));
+            workmatesButton.setTextColor(getResources().getColor(R.color.black));
 
-        Drawable drawable = getResources().getDrawable(R.drawable.baseline_view_list_black_24).mutate();
-        drawable.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
-        mapViewButton.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.baseline_map_black_24), null, null);
-        listViewButton.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
-        workmatesButton.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.baseline_people_black_24), null, null);
+            Drawable drawable = getResources().getDrawable(R.drawable.baseline_view_list_black_24).mutate();
+            drawable.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
+            mapViewButton.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.baseline_map_black_24), null, null);
+            listViewButton.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
+            workmatesButton.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.baseline_people_black_24), null, null);
+
     }
 
     @OnClick(R.id.home_page_activity_workmates_button)
@@ -308,6 +311,7 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
     // FRAGMENTS
     // --------------
     private void configureFragment() {
+        sleepbutton(listViewButton,workmatesButton);
         mapViewButton.setTextColor(getResources().getColor(R.color.colorPrimary));
         Drawable drawable = getResources().getDrawable(R.drawable.baseline_map_black_24).mutate();
         drawable.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
@@ -322,6 +326,7 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
 
 
     private void configureAndShowMapViewFragment() {
+        sleepbutton(listViewButton,workmatesButton);
         mapViewFragment = new MapViewFragment();
 
         getSupportFragmentManager().beginTransaction()
@@ -391,4 +396,29 @@ public class HomePageActivity extends BaseActivity implements NavigationView.OnN
         }
     }
 
+
+    public void sleepbutton(Button button1,Button button2){
+        button1.setEnabled(false);
+        button1.setText(getResources().getString(R.string.loading));
+        button2.setEnabled(false);
+        button2.setText(getResources().getString(R.string.loading));
+
+        Timer buttonTimer = new Timer();
+        buttonTimer.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        button1.setEnabled(true);
+                        button1.setText(getResources().getString(R.string.list_view));
+                        button2.setEnabled(true);
+                        button2.setText(getResources().getString(R.string.workmate));
+                    }
+                });
+            }
+        }, 3000);
+    }
 }

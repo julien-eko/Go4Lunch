@@ -1,10 +1,18 @@
 package com.example.go4lunch.Activities;
 
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -16,11 +24,13 @@ import com.example.go4lunch.Utils.Firestore.UserHelper;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Objects;
 
 public class MainActivity extends BaseActivity {
 
@@ -29,9 +39,17 @@ public class MainActivity extends BaseActivity {
     Button googleButton;
     private static final int RC_SIGN_IN = 123;
 
+    private final LatLng mDefaultLocation = new LatLng(-33.8523341, 151.2106085);
+    private static final int DEFAULT_ZOOM = 15;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private static boolean mLocationPermissionGranted;
+    private static Location mLastKnownLocation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getLocationPermission();
     }
 
     @Override
@@ -168,7 +186,52 @@ public class MainActivity extends BaseActivity {
 
 
     public void startActivity(){
-        Intent intent = new Intent(this, HomePageActivity.class);
-        startActivity(intent);
+        //Toast.makeText(this,Boolean.toString(mLocationPermissionGranted), Toast.LENGTH_LONG).show();
+        if(mLocationPermissionGranted) {
+            Intent intent = new Intent(this, HomePageActivity.class);
+            startActivity(intent);
+        }else{
+            Toast.makeText(this,getString(R.string.need_position), Toast.LENGTH_LONG).show();
+            getLocationPermission();
+        }
     }
+
+    //permition
+
+    private void getLocationPermission() {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = true;
+        } else {
+
+            ActivityCompat.requestPermissions(this, new String[] {
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                    },
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        mLocationPermissionGranted = false;
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mLocationPermissionGranted = true;
+
+                }
+            }
+        }
+    }
+
 }
